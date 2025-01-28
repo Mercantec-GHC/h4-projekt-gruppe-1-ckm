@@ -4,4 +4,5 @@
 /API/bin
 .vscode
 /.vs
+/appsettings.json
 API/appsettings.json
