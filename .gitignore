@@ -3,3 +3,5 @@
 /API/obj
 /API/bin
 .vscode
+.vs/slnx.sqlite
+.vs/slnx.sqlite-journal
