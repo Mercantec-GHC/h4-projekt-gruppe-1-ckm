@@ -22,4 +22,9 @@
         public string Username { get; set; }
         public string HashedPassword { get; set; }
     }
+
+    public class EditUserDTO
+    {
+        public string HashedPassword { get; set; }
+    }
 }
