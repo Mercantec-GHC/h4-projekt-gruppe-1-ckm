@@ -1,6 +1,7 @@
 ﻿using API.Models;
 using Microsoft.AspNetCore.Identity;
 using System;
+using System.Configuration;
 
 namespace API.Controllers
 {
@@ -9,10 +10,13 @@ namespace API.Controllers
     public class UsersController : ControllerBase
     {
         private readonly AppDBContext _context;
+        private readonly IConfiguration _configuration;
 
-        public UsersController(AppDBContext context)
+        public UsersController(AppDBContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
+
         }
 
         // GET: api/Users
@@ -100,9 +104,39 @@ namespace API.Controllers
                 return Unauthorized(new { message = "Invalid username or password" });
             }
 
-            return Ok();
-        }
+            var token = GenerateJwtToken(findUser);
 
+            return Ok(new { token });
+        }
+        private string GenerateJwtToken(User user)
+        {
+
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+
+              new Claim(ClaimTypes.Name, user.Username),
+              new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"] ?? Environment.GetEnvironmentVariable("Key")));
+
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+
+            _configuration["JwtSettings:Issuer"] ?? Environment.GetEnvironmentVariable("Issuer"),
+
+            _configuration["JwtSettings:Audience"] ?? Environment.GetEnvironmentVariable("Audience"),
+
+            claims,
+
+            expires: DateTime.Now.AddDays(30),
+
+            signingCredentials: creds);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
@@ -123,5 +157,7 @@ namespace API.Controllers
         {
             return _context.Users.Any(e => e.Id == id);
         }
+       
+
     }
 }
