@@ -1,10 +1,61 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class Signup extends StatelessWidget {
-  const Signup({super.key});
+class Signup extends StatefulWidget {
+  @override
+  _SignupState createState() => _SignupState();
+}
+
+class _SignupState extends State<Signup> {
+    String apiUrl = 'https://localhost:7173/api/Users/signUp'; 
+    final TextEditingController emailController = TextEditingController();
+    final TextEditingController usernameController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
+    String result = ''; // To store the result from the API call
+
+  @override
+  void dispose() {
+    usernameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _postData() async {
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, dynamic>{
+          'email': emailController.text,
+          'username': usernameController.text,
+          'password': passwordController.text,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        // Successful POST request, handle the response here
+        final responseData = jsonDecode(response.body);
+        setState(() {
+          result = 'ID: ${responseData['id']}\nUsername: ${responseData['Username']}\nEmail: ${responseData['email']}\nEmail: ${responseData['HashedPassword']}';
+        });
+      } else {
+        // If the server returns an error response, throw an exception
+        throw Exception('Failed to post data');
+      }
+    } catch (e) {
+      setState(() {
+        result = 'Error: $e';
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+  
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -40,6 +91,7 @@ class Signup extends StatelessWidget {
                 Column(
                   children: <Widget>[
                     TextField(
+                      controller: emailController,
                       decoration: InputDecoration(
                         hintText: "Email",
                         border: OutlineInputBorder(
@@ -49,11 +101,11 @@ class Signup extends StatelessWidget {
                         filled: true,
                         prefixIcon: const Icon(Icons.email),
                       ),
-                      obscureText: true,
                     ),
 
                     const SizedBox(height: 20),
                     TextField(
+                      controller: usernameController,
                       decoration: InputDecoration(
                           hintText: "Username",
                           border: OutlineInputBorder(
@@ -66,6 +118,7 @@ class Signup extends StatelessWidget {
 
                     const SizedBox(height: 20),
                     TextField(
+                      controller: passwordController,
                       decoration: InputDecoration(
                         hintText: "Password",
                         border: OutlineInputBorder(
@@ -92,20 +145,27 @@ class Signup extends StatelessWidget {
                       ),
                       obscureText: true,
                     ),
+                    SizedBox(height: 20.0),
+                    Text(
+                    result,
+                     style: TextStyle(fontSize: 16.0),
+                    ),
                   ],
                 ),
-                  const SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Container(
                     padding: const EdgeInsets.only(top: 3, left: 3),
-                    child: ElevatedButton(
-                      onPressed: () {
-                      },
+                    child:  ElevatedButton(
+                    onPressed: _postData,
+                    
+            
                       style: ElevatedButton.styleFrom(
                         shape: const StadiumBorder(),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         backgroundColor: const Color(0xff6F58C9),
                         foregroundColor: Colors.white,
                       ),
+                    
                       child: const Text(
                         "Sign up",
                         style: TextStyle(fontSize: 20),
