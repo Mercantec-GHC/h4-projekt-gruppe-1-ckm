@@ -47,11 +47,11 @@ class Signup extends StatelessWidget {
                             borderSide: BorderSide.none),
                         fillColor: Colors.purple.withOpacity(0.1),
                         filled: true,
-                        prefixIcon: const Icon(Icons.password),
+                        prefixIcon: const Icon(Icons.email),
                       ),
                       obscureText: true,
                     ),
-                    
+
                     const SizedBox(height: 20),
                     TextField(
                       decoration: InputDecoration(
