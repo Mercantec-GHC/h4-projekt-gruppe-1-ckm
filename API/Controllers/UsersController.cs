@@ -1,4 +1,8 @@
-﻿namespace API.Controllers
+﻿using API.Models;
+using Microsoft.AspNetCore.Identity;
+using System;
+
+namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -66,9 +70,9 @@
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("signUp")]
-        public async Task<ActionResult<User>> PostUser(SignupDTO userSignUp)
+        public async Task<ActionResult<User>> Signup(SignupDTO userSignUp)
         {
-            var HashedPassword = BCrypt.Net.BCrypt.HashPassword(userSignUp.HashedPassword);
+            var HashedPassword = BCrypt.Net.BCrypt.HashPassword(userSignUp.Password);
 
             User user = new()
             {
@@ -83,6 +87,18 @@
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginDTO userLogin)
+        {
+            var findUser = _context.Users.SingleOrDefault(x => x.Username == userLogin.Username);
+
+            if (findUser == null || !BCrypt.Net.BCrypt.Verify(userLogin.Password, findUser.HashedPassword))
+            {
+                return Unauthorized(new { message = "Invalid username or password" });
+            }
 
             return Ok();
         }
