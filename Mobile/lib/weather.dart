@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:fl_chart/fl_chart.dart';
 
 class WeatherForecastPage extends StatefulWidget {
+  const WeatherForecastPage({super.key});
+
   @override
   _WeatherForecastPageState createState() => _WeatherForecastPageState();
 }
@@ -42,16 +44,16 @@ class _WeatherForecastPageState extends State<WeatherForecastPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Weather Forecast Graph'),
+        title: const Text('Weather Forecast Graph'),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh),
             onPressed: fetchForecasts,
           ),
         ],
       ),
       body: forecasts.isEmpty
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
@@ -65,7 +67,7 @@ class _WeatherForecastPageState extends State<WeatherForecastPage> {
                         maxY:
                             (temperaturesC.reduce((a, b) => a > b ? a : b) + 20)
                                 .toDouble(),
-                        gridData: FlGridData(show: true), // Grid
+                        gridData: const FlGridData(show: true), // Grid
                         titlesData: FlTitlesData(
                           leftTitles: AxisTitles(
                             sideTitles: SideTitles(
@@ -124,15 +126,15 @@ class _WeatherForecastPageState extends State<WeatherForecastPage> {
                             color:
                                 Colors.blue, // Use `color` instead of `colors`
                             barWidth: 4,
-                            dotData: FlDotData(show: true),
+                            dotData: const FlDotData(show: true),
                             belowBarData: BarAreaData(show: false),
                           ),
                         ],
                       ),
                     ),
                   ),
-                  SizedBox(height: 20),
-                  Text(
+                  const SizedBox(height: 20),
+                  const Text(
                     'Weather Summaries',
                     style: TextStyle(
                       fontSize: 20,
@@ -152,10 +154,10 @@ class _WeatherForecastPageState extends State<WeatherForecastPage> {
                       },
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: fetchForecasts,
-                    child: Text('Refresh Data'),
+                    child: const Text('Refresh Data'),
                   ),
                 ],
               ),

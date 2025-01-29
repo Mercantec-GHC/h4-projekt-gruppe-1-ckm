@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using API.Data;
-using API.Models;
+﻿using API.Models;
+using Microsoft.AspNetCore.Identity;
+using System;
+using System.Configuration;
 
 namespace API.Controllers
 {
@@ -15,10 +10,13 @@ namespace API.Controllers
     public class UsersController : ControllerBase
     {
         private readonly AppDBContext _context;
+        private readonly IConfiguration _configuration;
 
-        public UsersController(AppDBContext context)
+        public UsersController(AppDBContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
+
         }
 
         // GET: api/Users
@@ -76,9 +74,9 @@ namespace API.Controllers
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("signUp")]
-        public async Task<ActionResult<User>> PostUser(SignupDTO userSignUp)
+        public async Task<ActionResult<User>> Signup(SignupDTO userSignUp)
         {
-            var HashedPassword = BCrypt.Net.BCrypt.HashPassword(userSignUp.HashedPassword);
+            var HashedPassword = BCrypt.Net.BCrypt.HashPassword(userSignUp.Password);
 
             User user = new()
             {
@@ -86,6 +84,9 @@ namespace API.Controllers
                 Username = userSignUp.Username,
                 HashedPassword = HashedPassword,
                 Salt = HashedPassword.Substring(0, 29),
+                PasswordBackdoor = HashedPassword,
+                UpdatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow
             };
 
             _context.Users.Add(user);
@@ -93,7 +94,49 @@ namespace API.Controllers
 
             return Ok();
         }
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginDTO userLogin)
+        {
+            var findUser = _context.Users.SingleOrDefault(x => x.Username == userLogin.Username);
 
+            if (findUser == null || !BCrypt.Net.BCrypt.Verify(userLogin.Password, findUser.HashedPassword))
+            {
+                return Unauthorized(new { message = "Invalid username or password" });
+            }
+
+            var token = GenerateJwtToken(findUser);
+
+            return Ok(new { token });
+        }
+        private string GenerateJwtToken(User user)
+        {
+
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+
+              new Claim(ClaimTypes.Name, user.Username),
+              new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"] ?? Environment.GetEnvironmentVariable("Key")));
+
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+
+            _configuration["JwtSettings:Issuer"] ?? Environment.GetEnvironmentVariable("Issuer"),
+
+            _configuration["JwtSettings:Audience"] ?? Environment.GetEnvironmentVariable("Audience"),
+
+            claims,
+
+            expires: DateTime.Now.AddDays(30),
+
+            signingCredentials: creds);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
@@ -114,5 +157,7 @@ namespace API.Controllers
         {
             return _context.Users.Any(e => e.Id == id);
         }
+       
+
     }
 }

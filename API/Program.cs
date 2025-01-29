@@ -1,3 +1,5 @@
+using API.Data;
+
 namespace API
 {
     public class Program
@@ -7,6 +9,9 @@ namespace API
             var builder = WebApplication.CreateBuilder(args);
 
             IConfiguration Configuration = builder.Configuration;
+            builder.Services.AddDbContext<AppDBContext>(options =>
+       options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
             // Add services to the container.
 
