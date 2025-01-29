@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class Signup extends StatefulWidget {
+  const Signup({super.key});
+
   @override
   _SignupState createState() => _SignupState();
 }
@@ -70,7 +72,6 @@ class _SignupState extends State<Signup> {
                 Column(
                   children: <Widget>[
                     const SizedBox(height: 60.0),
-
                     const Text(
                       "Sign up",
                       style: TextStyle(
@@ -145,7 +146,7 @@ class _SignupState extends State<Signup> {
                       ),
                       obscureText: true,
                     ),
-                    SizedBox(height: 20.0),
+                  const SizedBox(height: 20.0),
                     Text(
                     result,
                      style: TextStyle(fontSize: 16.0),
