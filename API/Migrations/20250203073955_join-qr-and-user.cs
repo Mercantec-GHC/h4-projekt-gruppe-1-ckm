@@ -18,8 +18,8 @@ namespace API.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    User_idId = table.Column<int>(type: "integer", nullable: false),
-                    Qr_idId = table.Column<int>(type: "integer", nullable: false),
+                    User_id = table.Column<int>(type: "integer", nullable: false),
+                    Qr_id = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -28,13 +28,13 @@ namespace API.Migrations
                     table.PrimaryKey("PK_UserQrCodes", x => x.Id);
                     table.ForeignKey(
                         name: "FK_UserQrCodes_QrCodes_Qr_idId",
-                        column: x => x.Qr_idId,
+                        column: x => x.Qr_id,
                         principalTable: "QrCodes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_UserQrCodes_Users_User_idId",
-                        column: x => x.User_idId,
+                        column: x => x.User_id,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);

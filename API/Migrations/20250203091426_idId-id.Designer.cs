@@ -3,6 +3,7 @@ using System;
 using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250203091426_idId-id")]
+    partial class idIdid
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,7 +111,7 @@ namespace API.Migrations
                     b.Property<int>("QrId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Qr_id")
+                    b.Property<int>("Qr_idId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -117,14 +120,18 @@ namespace API.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("User_id")
+                    b.Property<int>("User_idId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("QrId");
 
+                    b.HasIndex("Qr_idId");
+
                     b.HasIndex("UserId");
+
+                    b.HasIndex("User_idId");
 
                     b.ToTable("UserQrCodes");
                 });
@@ -137,15 +144,31 @@ namespace API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("API.Models.QrCode", "Qr_id")
+                        .WithMany()
+                        .HasForeignKey("Qr_idId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("API.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("API.Models.User", "User_id")
+                        .WithMany()
+                        .HasForeignKey("User_idId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("QrCode");
 
+                    b.Navigation("Qr_id");
+
                     b.Navigation("User");
+
+                    b.Navigation("User_id");
                 });
 #pragma warning restore 612, 618
         }
