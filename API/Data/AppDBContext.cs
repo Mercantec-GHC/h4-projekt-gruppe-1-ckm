@@ -1,4 +1,6 @@
-﻿namespace API.Data
+﻿using API.Controllers;
+
+namespace API.Data
 {
     public class AppDBContext : DbContext
     {
@@ -11,6 +13,5 @@
         public DbSet<User> Users { get; set; }
         public DbSet<QrCode> QrCodes { get; set; }
         public DbSet<User_QrCode> UserQrCodes { get; set;}
-
     }
 }
