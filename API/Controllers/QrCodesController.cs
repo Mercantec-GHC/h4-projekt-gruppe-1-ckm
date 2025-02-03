@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using API.Data;
-using API.Models;
-
+﻿
 namespace API.Controllers
 {
     [Route("api/[controller]")]
@@ -76,12 +67,20 @@ namespace API.Controllers
         // POST: api/QrCodes
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<QrCode>> PostQrCode(QrCode qrCode)
+        public async Task<ActionResult<QrCode>> PostQrCode(QrCodeDTO qrCodePost)
         {
+            QrCode qrCode = new()
+            {
+                Text = qrCodePost.Text,
+                Title = qrCodePost.Title,
+                Scannings = 0,
+                UpdatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow
+            };
             _context.QrCodes.Add(qrCode);
             await _context.SaveChangesAsync();
+            return Ok();
 
-            return CreatedAtAction("GetQrCode", new { id = qrCode.Id }, qrCode);
         }
 
         // DELETE: api/QrCodes/5

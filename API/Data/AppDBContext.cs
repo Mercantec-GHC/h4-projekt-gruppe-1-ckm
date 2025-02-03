@@ -10,6 +10,7 @@
 
         public DbSet<User> Users { get; set; }
         public DbSet<QrCode> QrCodes { get; set; }
+        public DbSet<User_QrCode> UserQrCodes { get; set;}
 
     }
 }
