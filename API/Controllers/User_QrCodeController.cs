@@ -69,6 +69,20 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<User_QrCode>> PostUser_QrCode(User_QrCode user_QrCode)
         {
+            var user = await _context.Users.FindAsync(user_QrCode.User_id);
+
+            if (user == null)
+            {
+                return BadRequest("No user id");
+            }
+
+            var qrCode = await _context.QrCodes.FindAsync(user_QrCode.Qr_id);
+
+            if(qrCode == null)
+            {
+                return BadRequest("No QR id");
+            }
+            
             _context.UserQrCodes.Add(user_QrCode);
             await _context.SaveChangesAsync();
 
