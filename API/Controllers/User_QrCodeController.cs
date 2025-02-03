@@ -67,7 +67,7 @@ namespace API.Controllers
         // POST: api/User_QrCode
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User_QrCode>> PostUser_QrCode(User_QrCode user_QrCode)
+        public async Task<ActionResult<User_QrCode>> PostUser_QrCode(User_QrCodeDTO user_QrCode)
         {
             var user = await _context.Users.FindAsync(user_QrCode.User_id);
 
@@ -82,11 +82,19 @@ namespace API.Controllers
             {
                 return BadRequest("No QR id");
             }
-            
-            _context.UserQrCodes.Add(user_QrCode);
+
+            User_QrCode userQR = new()
+            {
+                User_id = user_QrCode.User_id,
+                Qr_id = user_QrCode.Qr_id,
+                UpdatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow,
+            };
+
+            _context.UserQrCodes.Add(userQR);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetUser_QrCode", new { id = user_QrCode.Id }, user_QrCode);
+            return Ok();
         }
 
         // DELETE: api/User_QrCode/5
