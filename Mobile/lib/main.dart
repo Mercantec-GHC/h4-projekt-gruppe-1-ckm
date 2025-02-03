@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:qonnect/login.dart';
-import 'package:qonnect/signup.dart';
+import 'package:mobile/login.dart';
+import 'package:mobile/signup.dart';
 
 
 void main() => runApp(const MyApp());
