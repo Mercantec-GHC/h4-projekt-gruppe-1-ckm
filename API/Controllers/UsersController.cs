@@ -1,9 +1,4 @@
-﻿using API.Models;
-using Microsoft.AspNetCore.Identity;
-using System;
-using System.Configuration;
-
-namespace API.Controllers
+﻿namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -41,7 +36,6 @@ namespace API.Controllers
         }
 
         // PUT: api/Users/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(int id, User user)
         {
@@ -72,7 +66,6 @@ namespace API.Controllers
         }
 
         // POST: api/Users
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("signUp")]
         public async Task<ActionResult<User>> Signup(SignupDTO userSignUp)
         {
@@ -94,6 +87,7 @@ namespace API.Controllers
 
             return Ok();
         }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDTO userLogin)
         {
@@ -108,6 +102,7 @@ namespace API.Controllers
 
             return Ok(new { token });
         }
+
         private string GenerateJwtToken(User user)
         {
 
@@ -137,6 +132,7 @@ namespace API.Controllers
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)

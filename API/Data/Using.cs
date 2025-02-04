@@ -1,4 +1,5 @@
 ﻿global using Microsoft.AspNetCore.Authentication.JwtBearer;
+global using System.ComponentModel.DataAnnotations.Schema;
 global using System.ComponentModel.DataAnnotations;
 global using Microsoft.AspNetCore.Authorization;
 global using System.IdentityModel.Tokens.Jwt;

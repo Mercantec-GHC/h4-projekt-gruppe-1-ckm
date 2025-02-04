@@ -1,5 +1,4 @@
-﻿
-namespace API.Controllers
+﻿namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -34,7 +33,6 @@ namespace API.Controllers
         }
 
         // PUT: api/User_QrCode/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser_QrCode(int id, User_QrCode user_QrCode)
         {
@@ -65,7 +63,6 @@ namespace API.Controllers
         }
 
         // POST: api/User_QrCode
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<User_QrCode>> PostUser_QrCode(User_QrCodeDTO user_QrCode)
         {
