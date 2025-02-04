@@ -10,11 +10,12 @@ class Signup extends StatefulWidget {
 }
 
 class _SignupState extends State<Signup> {
-    String apiUrl = 'https://localhost:7173/api/Users/signUp'; 
-    final TextEditingController emailController = TextEditingController();
-    final TextEditingController usernameController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
-    String result = ''; // To store the result from the API call
+final Uri uri = Uri.parse('http://localhost:5287/api/Users/signUp');
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  String result = '';
 
   @override
   void dispose() {
@@ -26,28 +27,14 @@ class _SignupState extends State<Signup> {
 
   Future<void> _postData() async {
     try {
-      final response = await http.post(
-        Uri.parse(apiUrl),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, dynamic>{
-          'email': emailController.text,
-          'username': usernameController.text,
-          'password': passwordController.text,
-        }),
-      );
-
-      if (response.statusCode == 201) {
-        // Successful POST request, handle the response here
-        final responseData = jsonDecode(response.body);
-        setState(() {
-          result = 'ID: ${responseData['id']}\nUsername: ${responseData['Username']}\nEmail: ${responseData['email']}\nEmail: ${responseData['HashedPassword']}';
-        });
-      } else {
-        // If the server returns an error response, throw an exception
-        throw Exception('Failed to post data');
-      }
+       final map = <String, dynamic>{};
+        map['email'] = emailController.text;
+        map['username'] = usernameController.text;
+        map['password'] = passwordController.text;
+        http.Response response = await http.post(
+    uri,
+    body: map,
+);
     } catch (e) {
       setState(() {
         result = 'Error: $e';
@@ -57,7 +44,6 @@ class _SignupState extends State<Signup> {
 
   @override
   Widget build(BuildContext context) {
-  
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -88,7 +74,7 @@ class _SignupState extends State<Signup> {
                     )
                   ],
                 ),
-                    const SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Column(
                   children: <Widget>[
                     TextField(
@@ -103,7 +89,6 @@ class _SignupState extends State<Signup> {
                         prefixIcon: const Icon(Icons.email),
                       ),
                     ),
-
                     const SizedBox(height: 20),
                     TextField(
                       controller: usernameController,
@@ -116,7 +101,6 @@ class _SignupState extends State<Signup> {
                           filled: true,
                           prefixIcon: const Icon(Icons.person)),
                     ),
-
                     const SizedBox(height: 20),
                     TextField(
                       controller: passwordController,
@@ -131,9 +115,7 @@ class _SignupState extends State<Signup> {
                       ),
                       obscureText: true,
                     ),
-
                     const SizedBox(height: 20),
-
                     TextField(
                       decoration: InputDecoration(
                         hintText: "Confirm Password",
@@ -146,33 +128,41 @@ class _SignupState extends State<Signup> {
                       ),
                       obscureText: true,
                     ),
-                  const SizedBox(height: 20.0),
+                    const SizedBox(height: 20.0),
                     Text(
-                    result,
-                     style: TextStyle(fontSize: 16.0),
+                      result,
+                      style: TextStyle(fontSize: 16.0),
+                    ),
+                    Text(
+                      emailController.text,
+                      style: TextStyle(fontSize: 16.0),
+                    ),
+                    Text(
+                      usernameController.text,
+                      style: TextStyle(fontSize: 16.0),
+                    ),
+                    Text(
+                      passwordController.text,
+                      style: TextStyle(fontSize: 16.0),
                     ),
                   ],
                 ),
                 const SizedBox(height: 20),
                 Container(
                     padding: const EdgeInsets.only(top: 3, left: 3),
-                    child:  ElevatedButton(
-                    onPressed: _postData,
-                    
-            
+                    child: ElevatedButton(
+                      onPressed: _postData,
                       style: ElevatedButton.styleFrom(
                         shape: const StadiumBorder(),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         backgroundColor: const Color(0xff6F58C9),
                         foregroundColor: Colors.white,
                       ),
-                    
                       child: const Text(
                         "Sign up",
                         style: TextStyle(fontSize: 20),
                       ),
-                    )
-                ),
+                    )),
               ],
             ),
           ),

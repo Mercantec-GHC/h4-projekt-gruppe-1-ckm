@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:qonnect/login.dart';
-import 'package:qonnect/signup.dart';
+import 'package:Mobile/login.dart';
+import 'package:Mobile/signup.dart';
 
 
-void main() => runApp(const MyApp());
+void main() {
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -37,18 +39,18 @@ class HomeScreen extends StatelessWidget {
           const Align(
             alignment: Alignment.center,
           ),
-           const SizedBox(height: 70),
+          const SizedBox(height: 70),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xff6F58C9),
               foregroundColor: Colors.white,
             ),
             child: const Text('login'),
-             onPressed: () {
+            onPressed: () {
               Navigator.pushNamed(context, '/login');
             },
           ),
-           const SizedBox(height: 20),
+          const SizedBox(height: 20),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xff6F58C9),
