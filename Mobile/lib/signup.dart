@@ -10,11 +10,11 @@ class Signup extends StatefulWidget {
 }
 
 class _SignupState extends State<Signup> {
-    String apiUrl = 'https://localhost:7173/api/Users/signUp'; 
-    final TextEditingController emailController = TextEditingController();
-    final TextEditingController usernameController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
-    String result = ''; // To store the result from the API call
+  String apiUrl = 'https://localhost:7173/api/Users/signUp';
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  String result = ''; // To store the result from the API call
 
   @override
   void dispose() {
@@ -42,7 +42,8 @@ class _SignupState extends State<Signup> {
         // Successful POST request, handle the response here
         final responseData = jsonDecode(response.body);
         setState(() {
-          result = 'ID: ${responseData['id']}\nUsername: ${responseData['Username']}\nEmail: ${responseData['email']}\nEmail: ${responseData['HashedPassword']}';
+          result =
+              'ID: ${responseData['id']}\nUsername: ${responseData['Username']}\nEmail: ${responseData['email']}\nEmail: ${responseData['HashedPassword']}';
         });
       } else {
         // If the server returns an error response, throw an exception
@@ -57,7 +58,6 @@ class _SignupState extends State<Signup> {
 
   @override
   Widget build(BuildContext context) {
-  
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -69,109 +69,150 @@ class _SignupState extends State<Signup> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                Column(
+                const Column(
                   children: <Widget>[
-                    const SizedBox(height: 60.0),
-                    const Text(
+                    SizedBox(height: 60.0),
+                    Image(
+                      image: AssetImage('assets/qonnect.png'),
+                      height: 70,
+                    ),
+                    Text(
                       "Sign up",
                       style: TextStyle(
+                        color: Color(0xff6F58C9),
                         fontSize: 30,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Text(
-                      "Create your account",
-                      style: TextStyle(fontSize: 15, color: Colors.grey[700]),
-                    )
-                  ],
-                ),
-                    const SizedBox(height: 20),
-                Column(
-                  children: <Widget>[
-                    TextField(
-                      controller: emailController,
-                      decoration: InputDecoration(
-                        hintText: "Email",
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(18),
-                            borderSide: BorderSide.none),
-                        fillColor: Colors.purple.withOpacity(0.1),
-                        filled: true,
-                        prefixIcon: const Icon(Icons.email),
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-                    TextField(
-                      controller: usernameController,
-                      decoration: InputDecoration(
-                          hintText: "Username",
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(18),
-                              borderSide: BorderSide.none),
-                          fillColor: Colors.purple.withOpacity(0.1),
-                          filled: true,
-                          prefixIcon: const Icon(Icons.person)),
-                    ),
-
-                    const SizedBox(height: 20),
-                    TextField(
-                      controller: passwordController,
-                      decoration: InputDecoration(
-                        hintText: "Password",
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(18),
-                            borderSide: BorderSide.none),
-                        fillColor: Colors.purple.withOpacity(0.1),
-                        filled: true,
-                        prefixIcon: const Icon(Icons.password),
-                      ),
-                      obscureText: true,
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    TextField(
-                      decoration: InputDecoration(
-                        hintText: "Confirm Password",
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(18),
-                            borderSide: BorderSide.none),
-                        fillColor: Colors.purple.withOpacity(0.1),
-                        filled: true,
-                        prefixIcon: const Icon(Icons.password),
-                      ),
-                      obscureText: true,
-                    ),
-                  const SizedBox(height: 20.0),
-                    Text(
-                    result,
-                     style: TextStyle(fontSize: 16.0),
+                    SizedBox(
+                      height: 10,
                     ),
                   ],
                 ),
                 const SizedBox(height: 20),
-                Container(
-                    padding: const EdgeInsets.only(top: 3, left: 3),
-                    child:  ElevatedButton(
-                    onPressed: _postData,
-                    
-            
-                      style: ElevatedButton.styleFrom(
-                        shape: const StadiumBorder(),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        backgroundColor: const Color(0xff6F58C9),
-                        foregroundColor: Colors.white,
-                      ),
-                    
-                      child: const Text(
-                        "Sign up",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    )
+                Center(
+                  child: Container(
+                    width: 320, // 10 wider than the text fields and buttons
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(18),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 5,
+                          blurRadius: 7,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      children: <Widget>[
+                        TextField(
+                          controller: emailController,
+                          decoration: InputDecoration(
+                            hintText: "Email",
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(18),
+                                borderSide: BorderSide.none),
+                            fillColor: Colors.purple.withOpacity(0.1),
+                            filled: true,
+                            prefixIcon: const Icon(Icons.email),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        TextField(
+                          controller: usernameController,
+                          decoration: InputDecoration(
+                              hintText: "Username",
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(18),
+                                  borderSide: BorderSide.none),
+                              fillColor: Colors.purple.withOpacity(0.1),
+                              filled: true,
+                              prefixIcon: const Icon(Icons.person)),
+                        ),
+                        const SizedBox(height: 20),
+                        TextField(
+                          controller: passwordController,
+                          decoration: InputDecoration(
+                            hintText: "Password",
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(18),
+                                borderSide: BorderSide.none),
+                            fillColor: Colors.purple.withOpacity(0.1),
+                            filled: true,
+                            prefixIcon: const Icon(Icons.password),
+                          ),
+                          obscureText: true,
+                        ),
+                        const SizedBox(height: 20),
+                        TextField(
+                          decoration: InputDecoration(
+                            hintText: "Confirm Password",
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(18),
+                                borderSide: BorderSide.none),
+                            fillColor: Colors.purple.withOpacity(0.1),
+                            filled: true,
+                            prefixIcon: const Icon(Icons.password),
+                          ),
+                          obscureText: true,
+                        ),
+                        const SizedBox(height: 20.0),
+                        Text(
+                          result,
+                          style: const TextStyle(fontSize: 16.0),
+                        ),
+                        const SizedBox(height: 20),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: _postData,
+                            style: ElevatedButton.styleFrom(
+                              shape: const StadiumBorder(),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              backgroundColor: const Color(0xff6F58C9),
+                              foregroundColor: Colors.white,
+                            ),
+                            child: const Text(
+                              "Sign up",
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        const Text(
+                          "Already have an account?\n"
+                          "Click login to sign in",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.black54,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/login');
+                            },
+                            style: ElevatedButton.styleFrom(
+                              shape: const StadiumBorder(),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              backgroundColor: const Color(0xff6F58C9),
+                              foregroundColor: Colors.white,
+                            ),
+                            child: const Text(
+                              "Login",
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),

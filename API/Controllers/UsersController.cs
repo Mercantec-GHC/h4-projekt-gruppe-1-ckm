@@ -7,6 +7,17 @@
         private readonly AppDBContext _context;
         private readonly IConfiguration _configuration;
 
+        string message = "";
+        string errorMessage = "";
+        string errorMessageLogin = "";
+        string errorMessageSignup = "";
+        string errorMessageEditProfile = "";
+
+        bool usernameCheck = false;
+        bool passwordCheck = false;
+
+        public SignupDTO userProfile = new SignupDTO();
+
         public UsersController(AppDBContext context, IConfiguration configuration)
         {
             _context = context;
@@ -71,6 +82,9 @@
         {
             var HashedPassword = BCrypt.Net.BCrypt.HashPassword(userSignUp.Password);
 
+            // Reset error message
+            errorMessage = "";
+
             User user = new()
             {
                 Email = userSignUp.Email,
@@ -85,7 +99,7 @@
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(user);
         }
 
         [HttpPost("login")]
@@ -103,6 +117,28 @@
             return Ok(new { token });
         }
 
+        // DELETE: api/Users/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        private bool UserExists(int id)
+        {
+            return _context.Users.Any(e => e.Id == id);
+        }
+
+        // This is a method for generating a JWT token for the user
         private string GenerateJwtToken(User user)
         {
 
@@ -133,27 +169,98 @@
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        // DELETE: api/Users/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
+        // This is an email policy for insuring that there is fx. @ so that we are sure that it is a valid email 
+        public void EmailPolicyCheck(string email)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
+            if (string.IsNullOrWhiteSpace(email))
             {
-                return NotFound();
+                errorMessage = "Email cannot be empty or contain only whitespace!";
             }
 
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
+            if (!email.All(char.IsLetterOrDigit))
+            {
+                errorMessage = "Only letters and digits are allowed in the email!";
+            }
 
-            return NoContent();
+            if (!email.Contains("@"))
+            {
+                errorMessage = "Email is invalid";
+            }
+
+            else
+            {
+                message = "Email is accepted!";
+            }
         }
 
-        private bool UserExists(int id)
+        // This is a username policy for insuring that this isnt fx. @ so we can differenciate between mail and username 
+        public string UsernamePolicyCheck(string username)
         {
-            return _context.Users.Any(e => e.Id == id);
-        }
-       
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                return "Username cannot be empty or contain only whitespace!";
+            }
 
+            if (username.Length < 2)
+            {
+                return "Username must be at least 2 characters!";
+            }
+
+            if (!username.All(char.IsLetterOrDigit))
+            {
+                return "Only letters and digits are allowed in the username!";
+            }
+
+            if (!username.Any(char.IsUpper))
+            {
+                return "Username must contain uppercase letters!";
+            }
+
+            if (!username.Any(char.IsLower))
+            {
+                return "Username must contain lowercase letters!";
+            }
+
+            else
+            {
+                usernameCheck = true;
+                return "Username is valid";
+            }
+        }
+
+        // This is a password policy for insuring that the password is secure with at least 5 characters, 1 uppercase, 1 lowercase and 1 number
+        public string PasswordPolicyCheck(string password)
+        {
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                return "Password cannot be empty or contain only whitespace!";
+            }
+
+            if (password.Length < 5)
+            {
+                return "Password must be at least 5 characters!";
+            }
+
+            if (!password.Any(char.IsUpper))
+            {
+                return "Password must contain uppercase letters!";
+            }
+
+            if (!password.Any(char.IsLower))
+            {
+                return "Password must contain lowercase letters!";
+            }
+
+            if (!password.Any(char.IsDigit))
+            {
+                return "Password must contain numbers!";
+            }
+
+            else
+            {
+                passwordCheck = true;
+                return "Password is valid";
+            }
+        }
     }
 }
