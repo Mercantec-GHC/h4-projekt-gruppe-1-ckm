@@ -10,7 +10,7 @@ class Signup extends StatefulWidget {
 }
 
 class _SignupState extends State<Signup> {
-final Uri uri = Uri.parse('http://localhost:5287/api/Users/signUp');
+  final Uri uri = Uri.parse('http://localhost:5287/api/Users/signUp');
   final TextEditingController emailController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -25,16 +25,16 @@ final Uri uri = Uri.parse('http://localhost:5287/api/Users/signUp');
     super.dispose();
   }
 
-  Future<void> _postData() async {
+  Future<void> _postUser() async {
     try {
-       final map = <String, dynamic>{};
-        map['email'] = emailController.text;
-        map['username'] = usernameController.text;
-        map['password'] = passwordController.text;
-        http.Response response = await http.post(
-    uri,
-    body: map,
-);
+      final map = <String, dynamic>{};
+      map['email'] = emailController.text;
+      map['username'] = usernameController.text;
+      map['password'] = passwordController.text;
+      http.Response response = await http.post(
+        uri,
+        body: map,
+      );
     } catch (e) {
       setState(() {
         result = 'Error: $e';
@@ -151,7 +151,7 @@ final Uri uri = Uri.parse('http://localhost:5287/api/Users/signUp');
                 Container(
                     padding: const EdgeInsets.only(top: 3, left: 3),
                     child: ElevatedButton(
-                      onPressed: _postData,
+                      onPressed: _postUser,
                       style: ElevatedButton.styleFrom(
                         shape: const StadiumBorder(),
                         padding: const EdgeInsets.symmetric(vertical: 16),
