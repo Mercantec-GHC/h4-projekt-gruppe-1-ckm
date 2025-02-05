@@ -1,4 +1,6 @@
-﻿namespace API.Controllers
+﻿using API.Models;
+
+namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -34,12 +36,40 @@
 
         // PUT: api/QrCodes/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutQrCode(int id, QrCode qrCode)
+        public async Task<IActionResult> PutQrCode(int id, EditQrCode qrCodeEdit)
         {
-            if (id != qrCode.Id)
+            Regex validateTitle = new(@"^[a-zA-Z0-9]{1,30}$");  // Only letters and numbers (1-30 chars)
+            Regex validateText = new(@"(?:.*?\s)?(https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,10}(?:[-a-zA-Z0-9()@:%_+.~#?&//=]*)?)?(?:\s.*)?$"); // Standard link format
+
+            var errors = new Dictionary<string, string>();
+
+            if (!validateTitle.IsMatch(qrCodeEdit.Title))
             {
-                return BadRequest();
+                errors["Title"] = "Title must be 1-30 characters long and contain only letters and numbers.";
             }
+
+            if (!validateText.IsMatch(qrCodeEdit.Title))
+            {
+                errors["Text"] = "QR text field wrong";
+            }
+
+            if (errors.Count > 0)
+            {
+                BadRequest(new { Errors = errors });
+            }
+
+            // Fetch the existing QR code from the database
+            var qrCode = await _context.QrCodes.FindAsync(id);
+
+            if (qrCode == null)
+            {
+                return NotFound();
+            }
+
+            // Update fields
+            qrCode.Text = qrCodeEdit.Text;
+            qrCode.Title = qrCodeEdit.Title;
+            qrCode.UpdatedAt = DateTime.UtcNow;
 
             _context.Entry(qrCode).State = EntityState.Modified;
 
