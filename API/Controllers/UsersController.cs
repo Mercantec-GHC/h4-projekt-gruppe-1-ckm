@@ -78,6 +78,23 @@ namespace API.Controllers
         {
             var HashedPassword = BCrypt.Net.BCrypt.HashPassword(userSignUp.Password);
 
+            var usernameFinder = _context.Users.SingleOrDefault(x => x.Username == userSignUp.Username);
+            if (usernameFinder != null)
+            {
+                return BadRequest("Username exists");
+            }
+
+            var emailFinder = _context.Users.SingleOrDefault(x => x.Email == userSignUp.Email);
+            if (usernameFinder != null)
+            {
+                return BadRequest("Email exists");
+            }
+
+            if (userSignUp.Password.Length < 5)
+            {
+                return BadRequest("password too short");
+            }
+
             User user = new()
             {
                 Email = userSignUp.Email,
