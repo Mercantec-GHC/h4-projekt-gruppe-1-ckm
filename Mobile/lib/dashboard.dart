@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qonnect/createQr.dart'; // Import the CreateQr widget
+import 'package:Mobile/createQr.dart'; // Import the CreateQr widget
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
