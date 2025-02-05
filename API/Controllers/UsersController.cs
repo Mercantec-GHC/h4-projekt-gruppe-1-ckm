@@ -132,13 +132,6 @@
 
             return NoContent();
         }
-
-        private bool UserExists(int id)
-        {
-            return _context.Users.Any(e => e.Id == id);
-        }
-
-        // This is a method for generating a JWT token for the user
         private string GenerateJwtToken(User user)
         {
 
@@ -169,98 +162,9 @@
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        // This is an email policy for insuring that there is fx. @ so that we are sure that it is a valid email 
-        public void EmailPolicyCheck(string email)
+        private bool UserExists(int id)
         {
-            if (string.IsNullOrWhiteSpace(email))
-            {
-                errorMessage = "Email cannot be empty or contain only whitespace!";
-            }
-
-            if (!email.All(char.IsLetterOrDigit))
-            {
-                errorMessage = "Only letters and digits are allowed in the email!";
-            }
-
-            if (!email.Contains("@"))
-            {
-                errorMessage = "Email is invalid";
-            }
-
-            else
-            {
-                message = "Email is accepted!";
-            }
-        }
-
-        // This is a username policy for insuring that this isnt fx. @ so we can differenciate between mail and username 
-        public string UsernamePolicyCheck(string username)
-        {
-            if (string.IsNullOrWhiteSpace(username))
-            {
-                return "Username cannot be empty or contain only whitespace!";
-            }
-
-            if (username.Length < 2)
-            {
-                return "Username must be at least 2 characters!";
-            }
-
-            if (!username.All(char.IsLetterOrDigit))
-            {
-                return "Only letters and digits are allowed in the username!";
-            }
-
-            if (!username.Any(char.IsUpper))
-            {
-                return "Username must contain uppercase letters!";
-            }
-
-            if (!username.Any(char.IsLower))
-            {
-                return "Username must contain lowercase letters!";
-            }
-
-            else
-            {
-                usernameCheck = true;
-                return "Username is valid";
-            }
-        }
-
-        // This is a password policy for insuring that the password is secure with at least 5 characters, 1 uppercase, 1 lowercase and 1 number
-        public string PasswordPolicyCheck(string password)
-        {
-            if (string.IsNullOrWhiteSpace(password))
-            {
-                return "Password cannot be empty or contain only whitespace!";
-            }
-
-            if (password.Length < 5)
-            {
-                return "Password must be at least 5 characters!";
-            }
-
-            if (!password.Any(char.IsUpper))
-            {
-                return "Password must contain uppercase letters!";
-            }
-
-            if (!password.Any(char.IsLower))
-            {
-                return "Password must contain lowercase letters!";
-            }
-
-            if (!password.Any(char.IsDigit))
-            {
-                return "Password must contain numbers!";
-            }
-
-            else
-            {
-                passwordCheck = true;
-                return "Password is valid";
-            }
+            return _context.Users.Any(e => e.Id == id);
         }
     }
 }
