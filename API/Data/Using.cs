@@ -1,4 +1,5 @@
-﻿global using Microsoft.AspNetCore.Authentication.JwtBearer;
+global using Microsoft.AspNetCore.Authentication.JwtBearer;
+global using System.ComponentModel.DataAnnotations.Schema;
 global using System.ComponentModel.DataAnnotations;
 global using Microsoft.AspNetCore.Authorization;
 global using System.IdentityModel.Tokens.Jwt;
@@ -12,4 +13,3 @@ global using Scalar.AspNetCore;
 global using System.Text;
 global using API.Models;
 global using API.Data;
-global using System.Text.RegularExpressions;
