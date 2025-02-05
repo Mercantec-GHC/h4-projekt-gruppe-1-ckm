@@ -69,6 +69,17 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<QrCode>> PostQrCode(QrCodeDTO qrCodePost)
         {
+
+            if (qrCodePost.Title.Length == 0)
+            {
+                return BadRequest("Title field cant be empty");
+            }
+
+            if (qrCodePost.Text.Length == 0)
+            {
+                return BadRequest("Qr field cant be empty");
+            }
+
             QrCode qrCode = new()
             {
                 Text = qrCodePost.Text,
@@ -80,7 +91,6 @@ namespace API.Controllers
             _context.QrCodes.Add(qrCode);
             await _context.SaveChangesAsync();
             return Ok();
-
         }
 
         // DELETE: api/QrCodes/5
