@@ -69,15 +69,24 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<QrCode>> PostQrCode(QrCodeDTO qrCodePost)
         {
+            Regex validateTitle = new(@"^[a-zA-Z0-9]{1,30}$");  // Only letters and numbers (1-30 chars)
+            Regex validateText = new(@"^[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$");
 
-            if (qrCodePost.Title.Length == 0)
+            var errors = new Dictionary<string, string>();
+
+            if (!validateTitle.IsMatch(qrCodePost.Title))
             {
-                return BadRequest("Title field cant be empty");
+                errors["Title"] = "Title must be 1-30 characters long and contain only letters and numbers.";
             }
 
-            if (qrCodePost.Text.Length == 0)
+            if (!validateText.IsMatch(qrCodePost.Title))
             {
-                return BadRequest("Qr field cant be empty");
+                errors["Text"] = "QR text field wrong";
+            }
+
+            if (errors.Count > 0)
+            {
+                return BadRequest(new { Errors = errors });
             }
 
             QrCode qrCode = new()
@@ -90,7 +99,8 @@ namespace API.Controllers
             };
             _context.QrCodes.Add(qrCode);
             await _context.SaveChangesAsync();
-            return Ok();
+            return Ok(new { Message = "QR registered successfully." });
+
         }
 
         // DELETE: api/QrCodes/5
