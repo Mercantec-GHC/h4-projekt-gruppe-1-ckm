@@ -71,18 +71,18 @@ namespace API.Controllers
             return NoContent();
         }
 
-        // POST: api/Users
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("signUp")]
         public async Task<ActionResult<User>> Signup(SignupDTO userSignUp)
         {
             // Hash the password
             var HashedPassword = BCrypt.Net.BCrypt.HashPassword(userSignUp.Password);
 
-            // Regex for username validation (5-15 characters, only letters and numbers)
-            Regex validateUsername = new(@"^[a-zA-Z0-9]{5,15}$");
+            // Regex patterns
+            Regex validateUsername = new(@"^[a-zA-Z0-9]{5,15}$");  // Only letters and numbers (5-15 chars)
+            Regex validateEmail = new(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");  // Standard email format
+            Regex validatePassword = new(@"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"); // Strong password
 
-            // Dictionary to collect validation errors
+            // Dictionary to store validation errors
             var errors = new Dictionary<string, string>();
 
             // Validate username format
@@ -91,31 +91,37 @@ namespace API.Controllers
                 errors["Username"] = "Username must be 5-15 characters long and contain only letters and numbers.";
             }
 
-            // Check if username exists
+            // Check if username already exists
             if (_context.Users.Any(x => x.Username == userSignUp.Username))
             {
                 errors["Username"] = "Username is already taken.";
             }
 
-            // Check if email exists
+            // Validate email format
+            if (!validateEmail.IsMatch(userSignUp.Email))
+            {
+                errors["Email"] = "Invalid email format.";
+            }
+
+            // Check if email already exists
             if (_context.Users.Any(x => x.Email == userSignUp.Email))
             {
                 errors["Email"] = "Email is already registered.";
             }
 
-            // Validate password length
-            if (userSignUp.Password.Length < 5)
+            // Validate password strength
+            if (!validatePassword.IsMatch(userSignUp.Password))
             {
-                errors["Password"] = "Password is too short. It must be at least 5 characters long.";
+                errors["Password"] = "Password must be at least 8 characters long, contain at least one letter, one number, and one special character.";
             }
 
-            // If there are validation errors, return a structured validation problem response (422)
+            // If there are validation errors, return BadRequest (400) with error details
             if (errors.Count > 0)
             {
-                return UnprocessableEntity(new { Errors = errors });
+                return BadRequest(new { Errors = errors });
             }
 
-            // Create a new user object
+            // Create new user object
             User user = new()
             {
                 Email = userSignUp.Email,
@@ -131,7 +137,7 @@ namespace API.Controllers
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(Signup), new { id = user.Id }, new { Message = "User registered successfully." });
+            return Ok(new { Message = "User registered successfully." });
         }
 
         [HttpPost("login")]
