@@ -35,6 +35,7 @@ namespace API.Controllers
         }
 
         // PUT: api/QrCodes/5
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutQrCode(int id, EditQrCode qrCodeEdit)
         {
@@ -93,6 +94,7 @@ namespace API.Controllers
         }
 
         // POST: api/QrCodes
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<QrCode>> PostQrCode(QrCodeDTO qrCodePost)
         {
@@ -131,6 +133,7 @@ namespace API.Controllers
         }
 
         // DELETE: api/QrCodes/5
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteQrCode(int id)
         {
