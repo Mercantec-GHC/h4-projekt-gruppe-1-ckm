@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:Mobile/login.dart';
-import 'package:Mobile/signup.dart';
+import 'package:qonnect/signup.dart';
+import 'package:qonnect/login.dart';
+import 'package:qonnect/dashboard.dart';
 
-
-void main() {
-  runApp(const MyApp());
-}
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -18,6 +16,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => const HomeScreen(),
         '/signup': (context) => const Signup(),
         '/login': (context) => const Login(),
+        '/dashboard': (context) => const Dashboard(),
       },
     );
   }
@@ -29,7 +28,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xff46006F),
+      backgroundColor: const Color.fromARGB(255, 51, 0, 80),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
@@ -39,27 +38,59 @@ class HomeScreen extends StatelessWidget {
           const Align(
             alignment: Alignment.center,
           ),
-          const SizedBox(height: 70),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xff6F58C9),
-              foregroundColor: Colors.white,
+          const SizedBox(height: 30),
+          SizedBox(
+            height: 50,
+            width: 140,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xff6F58C9),
+                foregroundColor: Colors.white,
+              ),
+              child: const Text(
+                'Login',
+                style: TextStyle(fontSize: 20),
+              ),
+              onPressed: () {
+                Navigator.pushNamed(context, '/login');
+              },
             ),
-            child: const Text('login'),
-            onPressed: () {
-              Navigator.pushNamed(context, '/login');
-            },
           ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xff6F58C9),
-              foregroundColor: Colors.white,
+          const SizedBox(height: 30),
+          SizedBox(
+            height: 50,
+            width: 140,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xff6F58C9),
+                foregroundColor: Colors.white,
+              ),
+              child: const Text(
+                'Sign up',
+                style: TextStyle(fontSize: 20),
+              ),
+              onPressed: () {
+                Navigator.pushNamed(context, '/signup');
+              },
             ),
-            child: const Text('signup'),
-            onPressed: () {
-              Navigator.pushNamed(context, '/signup');
-            },
+          ),
+          const SizedBox(height: 30),
+          SizedBox(
+            height: 50,
+            width: 140,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xff6F58C9),
+                foregroundColor: Colors.white,
+              ),
+              child: const Text(
+                'Dashboard',
+                style: TextStyle(fontSize: 20),
+              ),
+              onPressed: () {
+                Navigator.pushNamed(context, '/dashboard');
+              },
+            ),
           ),
         ],
       ),

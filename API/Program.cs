@@ -1,5 +1,3 @@
-using API.Data;
-
 namespace API
 {
     public class Program
