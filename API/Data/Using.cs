@@ -12,3 +12,4 @@ global using Scalar.AspNetCore;
 global using System.Text;
 global using API.Models;
 global using API.Data;
+global using System.Text.RegularExpressions;
