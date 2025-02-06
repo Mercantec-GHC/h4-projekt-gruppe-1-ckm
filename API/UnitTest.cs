@@ -13,7 +13,7 @@ namespace API
             string username = "test";
             string hashedPassword = "Test123!";
 
-            User user = new(username, hashedPassword, email);
+            //User user = new(username, hashedPassword, email);
         }
 
         //[TestMethod]
