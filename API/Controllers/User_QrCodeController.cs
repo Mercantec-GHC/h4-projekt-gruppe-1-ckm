@@ -32,6 +32,22 @@
             return user_QrCode;
         }
 
+        // GET: api/User_QrCode/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<User_QrCode>> Search_QrCode(string title)
+        {
+            var search_QrCode = await _context.UserQrCodes.FindAsync(title);
+
+            if (search_QrCode.QrCode.Title.Contains(title))
+            {
+                return search_QrCode;
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
         // PUT: api/User_QrCode/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser_QrCode(int id, User_QrCode user_QrCode)
