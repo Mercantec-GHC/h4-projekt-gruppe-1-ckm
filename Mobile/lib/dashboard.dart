@@ -41,6 +41,12 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
+  void addQrButton() {
+    setState(() {
+      buttons.add(createButton());
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,6 +57,34 @@ class _DashboardState extends State<Dashboard> {
           const Align(
             alignment: Alignment.center,
           ),
+          if (buttons.length >= 12)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: 'Search QR Codes',
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+            ),
+          if (buttons.length >= 12)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CreateQr()),
+                    );
+                  },
+                  child: const Text('Add QR Code'),
+                ),
+              ],
+            ),
           Expanded(
             child: GridView.builder(
               padding: const EdgeInsets.all(20),
