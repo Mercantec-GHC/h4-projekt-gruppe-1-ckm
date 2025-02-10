@@ -1,8 +1,77 @@
-
-/API/.vs
-/API/obj
-/API/bin
-.vscode
-/.vs
-/appsettings.json
-API/appsettings.json
+# Flutter/Dart specific files
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+flutter_bootstrap/
+*.dart.js
+*.js.deps
+*.js.map
+*.module
+/Mobile/linux/flutter
+/Mobile/macos/Flutter
+/Mobile/windows/flutter
+ 
+# Flutter and Dart IDE settings
+android/.gradle/
+android/app/*.keystore
+android/key.properties
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/App.framework
+ios/Flutter/Flutter.framework
+ios/Flutter/Generated.xcconfig
+macos/Flutter/ephemeral/
+windows/Flutter/ephemeral/
+linux/flutter/ephemeral/
+web/.dart_tool/
+ 
+# Visual Studio specific
+.vs/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.ps1
+*.psm1
+*.pdb
+*.opendb
+*.log
+ 
+# Visual Studio Code settings
+.vscode/
+*.code-workspace
+ 
+# JetBrains IDEs (if using Android Studio)
+.idea/
+*.iml
+ 
+# Node_modules (if you use Firebase or other Node.js tools)
+node_modules/
+ 
+# Generated IntelliJ/Android Studio project files
+*.iml
+*.ipr
+*.iws
+ 
+# Miscellaneous
+*.swp
+*.swo
+.DS_Store
+*.lock
+*.tmp
+*.bak
+*.log
+*.sqlite
+*.sql
+ 
+# Secrets and Keys (Don't store sensitive files)
+*.key
+*.jks
+*.pem
+*.p12
+*.crt
+*.der
+*.pfx
+*.cer
