@@ -1,16 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import 'dart:io';
 
-class MyHttpOverrides extends HttpOverrides {
-  @override
-  HttpClient createHttpClient(SecurityContext? context) {
-    return super.createHttpClient(context)
-      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
-  }
-}
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -34,7 +26,7 @@ class _SignupState extends State<Signup> {
     super.dispose();
   }
 
-  Future<void> _postData() async {
+  Future<void> _postUser() async {
   try {
     // 🔹 Build the request body
     Map<String, dynamic> body = {
@@ -51,14 +43,13 @@ class _SignupState extends State<Signup> {
       body: jsonEncode(body), 
     );
 
-    if (response.statusCode == 201) {
-      final responseData = jsonDecode(response.body);
+      if (response.statusCode == 200 || response.statusCode == 201) {
       setState(() {
-        result = 'Success: ${responseData.toString()}';
+        result = 'Success: ${response.body}';
       });
     } else {
       setState(() {
-        result = 'login Failed';
+        result = 'signup Failed';
       });
     }
   } catch (e) {
@@ -159,19 +150,6 @@ class _SignupState extends State<Signup> {
                           ),
                           obscureText: true,
                         ),
-                        const SizedBox(height: 20),
-                        TextField(
-                          decoration: InputDecoration(
-                            hintText: "Confirm Password",
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(18),
-                                borderSide: BorderSide.none),
-                            fillColor: Colors.purple.withOpacity(0.1),
-                            filled: true,
-                            prefixIcon: const Icon(Icons.password),
-                          ),
-                          obscureText: true,
-                        ),
                         const SizedBox(height: 20.0),
                         Text(
                           result,
@@ -181,7 +159,7 @@ class _SignupState extends State<Signup> {
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: _postData,
+                            onPressed: _postUser,
                             style: ElevatedButton.styleFrom(
                               shape: const StadiumBorder(),
                               padding: const EdgeInsets.symmetric(vertical: 16),

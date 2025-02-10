@@ -1,7 +1,68 @@
 import 'package:flutter/material.dart';
+import 'package:Mobile/dashboard.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class Login extends StatelessWidget {
+
+class Login extends StatefulWidget {
   const Login({super.key});
+  @override
+  _LoginState createState() => _LoginState();
+}
+class _LoginState extends State<Login> {
+  String apiUrl = 'http://localhost:5287/api/Users/login';
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  String result = ''; // To store the result from the API call
+
+  @override
+  void dispose() {
+    usernameController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+Future<void> _postUser() async {
+  try {
+    Map<String, dynamic> body = {
+      'username': usernameController.text.trim(),
+      'password': passwordController.text.trim(),
+    };
+
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(body),
+    );
+
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final responseData = jsonDecode(response.body);
+
+      setState(() {
+        result = 'Success: ${responseData.toString()}';
+      });
+
+      // 🚀 Redirect to Dashboard after successful login
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const Dashboard()),
+      );
+    } else {
+      setState(() {
+        result = 'Login Failed: ${response.body}';
+      });
+    }
+  } catch (e) {
+    setState(() {
+      result = 'Error: $e';
+    });
+  }
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +118,7 @@ class Login extends StatelessWidget {
                     child: Column(
                       children: <Widget>[
                         TextField(
+                          controller: usernameController,
                           decoration: InputDecoration(
                               hintText: "Username",
                               border: OutlineInputBorder(
@@ -68,6 +130,7 @@ class Login extends StatelessWidget {
                         ),
                         const SizedBox(height: 20),
                         TextField(
+                          controller: passwordController,
                           decoration: InputDecoration(
                             hintText: "Password",
                             border: OutlineInputBorder(
@@ -79,11 +142,16 @@ class Login extends StatelessWidget {
                           ),
                           obscureText: true,
                         ),
+                            const SizedBox(height: 20.0),
+                        Text(
+                          result,
+                          style: const TextStyle(fontSize: 16.0),
+                        ),
                         const SizedBox(height: 20),
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: _postUser,
                             style: ElevatedButton.styleFrom(
                               shape: const StadiumBorder(),
                               padding: const EdgeInsets.symmetric(vertical: 16),
