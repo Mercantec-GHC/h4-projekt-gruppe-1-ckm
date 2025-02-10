@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:Mobile/dashboard.dart';
 import 'package:http/http.dart' as http;
+import 'package:Mobile/auth_service.dart';
 import 'dart:convert';
-
 
 class Login extends StatefulWidget {
   const Login({super.key});
   @override
   _LoginState createState() => _LoginState();
 }
+
 class _LoginState extends State<Login> {
+  final AuthService _authService = AuthService(); // Added AuthService
   String apiUrl = 'http://localhost:5287/api/Users/login';
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -22,47 +24,52 @@ class _LoginState extends State<Login> {
     super.dispose();
   }
 
-Future<void> _postUser() async {
-  try {
-    Map<String, dynamic> body = {
-      'username': usernameController.text.trim(),
-      'password': passwordController.text.trim(),
-    };
+  Future<void> _postUser() async {
+    try {
+      Map<String, dynamic> body = {
+        'username': usernameController.text.trim(),
+        'password': passwordController.text.trim(),
+      };
 
-    final response = await http.post(
-      Uri.parse(apiUrl),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(body),
-    );
-
-
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      final responseData = jsonDecode(response.body);
-
-      setState(() {
-        result = 'Success: ${responseData.toString()}';
-      });
-
-      // 🚀 Redirect to Dashboard after successful login
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const Dashboard()),
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(body),
       );
-    } else {
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final responseData = jsonDecode(response.body);
+        String? token = responseData['token']; 
+
+        if (token != null) {
+          await _authService.saveToken(token); // Save token securely
+          setState(() {
+            result = 'Login Successful!';
+          });
+
+          // 🚀 Redirect to Dashboard after successful login
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const Dashboard()),
+          );
+        } else {
+          setState(() {
+            result = 'Login Failed: Token not received';
+          });
+        }
+      } else {
+        setState(() {
+          result = 'Login Failed: ${response.body}';
+        });
+      }
+    } catch (e) {
       setState(() {
-        result = 'Login Failed: ${response.body}';
+        result = 'Error: $e';
       });
     }
-  } catch (e) {
-    setState(() {
-      result = 'Error: $e';
-    });
   }
-}
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -93,9 +100,7 @@ Future<void> _postUser() async {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(
-                      height: 20,
-                    ),
+                    SizedBox(height: 20),
                   ],
                 ),
                 const SizedBox(height: 20),
@@ -142,7 +147,7 @@ Future<void> _postUser() async {
                           ),
                           obscureText: true,
                         ),
-                            const SizedBox(height: 20.0),
+                        const SizedBox(height: 20.0),
                         Text(
                           result,
                           style: const TextStyle(fontSize: 16.0),
