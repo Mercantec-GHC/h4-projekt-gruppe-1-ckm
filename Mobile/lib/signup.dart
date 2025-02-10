@@ -2,6 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'dart:io';
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+  }
+}
+
 class Signup extends StatefulWidget {
   const Signup({super.key});
 
@@ -10,7 +20,7 @@ class Signup extends StatefulWidget {
 }
 
 class _SignupState extends State<Signup> {
-  String apiUrl = 'https://localhost:7173/api/Users/signUp';
+  String apiUrl = 'http://localhost:5287/api/Users/signUp';
   final TextEditingController emailController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -25,36 +35,39 @@ class _SignupState extends State<Signup> {
   }
 
   Future<void> _postData() async {
-    try {
-      final response = await http.post(
-        Uri.parse(apiUrl),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, dynamic>{
-          'email': emailController.text,
-          'username': usernameController.text,
-          'password': passwordController.text,
-        }),
-      );
+  try {
+    // 🔹 Build the request body
+    Map<String, dynamic> body = {
+      'email': emailController.text.trim(),
+      'username': usernameController.text.trim(),
+      'password': passwordController.text.trim(),
+    };
 
-      if (response.statusCode == 201) {
-        // Successful POST request, handle the response here
-        final responseData = jsonDecode(response.body);
-        setState(() {
-          result =
-              'ID: ${responseData['id']}\nUsername: ${responseData['Username']}\nEmail: ${responseData['email']}\nEmail: ${responseData['HashedPassword']}';
-        });
-      } else {
-        // If the server returns an error response, throw an exception
-        throw Exception('Failed to post data');
-      }
-    } catch (e) {
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(body), 
+    );
+
+    if (response.statusCode == 201) {
+      final responseData = jsonDecode(response.body);
       setState(() {
-        result = 'Error: $e';
+        result = 'Success: ${responseData.toString()}';
+      });
+    } else {
+      setState(() {
+        result = 'login Failed';
       });
     }
+  } catch (e) {
+    setState(() {
+      result = 'Error: $e';
+    });
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
