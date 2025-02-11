@@ -1,3 +1,4 @@
+
 # Flutter/Dart specific files
 .dart_tool/
 .packages
@@ -75,3 +76,4 @@ node_modules/
 *.der
 *.pfx
 *.cer
+
