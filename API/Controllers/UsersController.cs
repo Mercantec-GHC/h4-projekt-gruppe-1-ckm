@@ -41,7 +41,6 @@ namespace API.Controllers
         }
 
         // PUT: api/Users/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(int id, EditUserDTO user)
@@ -123,7 +122,6 @@ namespace API.Controllers
             }
             return NoContent();
         }
-
 
         [HttpPost("signUp")]
         public async Task<ActionResult<User>> Signup(SignupDTO userSignUp)

@@ -32,6 +32,27 @@
             return user_QrCode;
         }
 
+        [Authorize]
+        [HttpGet("Search")]
+        public async Task<ActionResult<IEnumerable<User_QrCodeDTO>>> Search_QrCode(string title)
+        {
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                return BadRequest("Search title cannot be empty.");
+            }
+
+            var qrCodes = await _context.UserQrCodes
+                .Where(q => q.QrCode.Title.Contains(title))
+                .ToListAsync();
+
+            if (qrCodes == null || !qrCodes.Any())
+            {
+                return NotFound("No matching QR codes found.");
+            }
+
+            return Ok(qrCodes);
+        }
+
         // PUT: api/User_QrCode/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser_QrCode(int id, User_QrCode user_QrCode)
