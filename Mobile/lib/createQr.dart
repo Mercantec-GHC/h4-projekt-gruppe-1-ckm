@@ -83,6 +83,11 @@ class _CreateQrState extends State<CreateQr> {
                   width: 150,
                   child: ElevatedButton(
                     onPressed: () async {
+                      // Clear the error message
+                      setState(() {
+                        _errorMessage = '';
+                      });
+
                       // Validate input fields
                       if (_titleController.text.isEmpty ||
                           _linkController.text.isEmpty) {
@@ -94,7 +99,7 @@ class _CreateQrState extends State<CreateQr> {
 
                       // Make the API call
                       final response = await http.post(
-                        Uri.parse('https://yourapi.com/create'),
+                        Uri.parse('https://localhost:7173/api/QrCodes'),
                         body: {
                           'title': _titleController.text,
                           'link': _linkController.text,
