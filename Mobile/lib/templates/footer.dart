@@ -42,7 +42,7 @@ class Footer extends StatelessWidget {
                 constraints: const BoxConstraints(),
                 onPressed: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const HomeScreen()),
+                  MaterialPageRoute(builder: (context) => const Dashboard()),
                 ),
                 icon: const Icon(Icons.cottage),
               ),
