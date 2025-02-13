@@ -1,3 +1,4 @@
+import 'package:Mobile/templates/footerOnlyHome.dart';
 import 'package:flutter/material.dart';
 import 'package:Mobile/dashboard.dart';
 import 'package:http/http.dart' as http;
@@ -41,7 +42,7 @@ class _LoginState extends State<Login> {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseData = jsonDecode(response.body);
-        String? token = responseData['token']; 
+        String? token = responseData['token'];
 
         if (token != null) {
           await _authService.saveToken(token); // Save token securely
@@ -206,6 +207,7 @@ class _LoginState extends State<Login> {
             ),
           ),
         ),
+        bottomNavigationBar: const FooterOnlyHome(),
       ),
     );
   }

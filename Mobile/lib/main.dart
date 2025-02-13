@@ -1,3 +1,4 @@
+import 'package:Mobile/templates/footerOnlyHome.dart';
 import 'package:flutter/material.dart';
 import 'package:Mobile/signup.dart';
 import 'package:Mobile/login.dart';
@@ -94,6 +95,7 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
+      bottomNavigationBar: const FooterOnlyHome(),
     );
   }
 }

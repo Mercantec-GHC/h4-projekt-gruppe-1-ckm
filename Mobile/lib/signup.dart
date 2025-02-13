@@ -1,7 +1,7 @@
+import 'package:Mobile/templates/footerOnlyHome.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -26,38 +26,37 @@ class _SignupState extends State<Signup> {
   }
 
   Future<void> _postUser() async {
-  try {
-    // 🔹 Build the request body
-    Map<String, dynamic> body = {
-      'email': emailController.text.trim(),
-      'username': usernameController.text.trim(),
-      'password': passwordController.text.trim(),
-    };
+    try {
+      // 🔹 Build the request body
+      Map<String, dynamic> body = {
+        'email': emailController.text.trim(),
+        'username': usernameController.text.trim(),
+        'password': passwordController.text.trim(),
+      };
 
-    final response = await http.post(
-      Uri.parse(apiUrl),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(body), 
-    );
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(body),
+      );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
+        setState(() {
+          result = 'Success: ${response.body}';
+        });
+      } else {
+        setState(() {
+          result = 'signup Failed';
+        });
+      }
+    } catch (e) {
       setState(() {
-        result = 'Success: ${response.body}';
-      });
-    } else {
-      setState(() {
-        result = 'signup Failed';
+        result = 'Error: $e';
       });
     }
-  } catch (e) {
-    setState(() {
-      result = 'Error: $e';
-    });
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -208,6 +207,7 @@ class _SignupState extends State<Signup> {
             ),
           ),
         ),
+        bottomNavigationBar: const FooterOnlyHome(),
       ),
     );
   }

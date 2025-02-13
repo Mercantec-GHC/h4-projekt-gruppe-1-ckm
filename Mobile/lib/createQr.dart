@@ -1,6 +1,8 @@
 /// This file contains the implementation of a Flutter widget that allows users to create a QR code by providing a title and a link/text.
 
 /// Import necessary packages
+import 'package:Mobile/templates/footer.dart';
+import 'package:Mobile/templates/header.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -34,6 +36,7 @@ class _CreateQrState extends State<CreateQr> {
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
+        // Fix later const Header(),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -43,6 +46,7 @@ class _CreateQrState extends State<CreateQr> {
           const Align(
             alignment: Alignment.center,
           ),
+
           /// Header text
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -76,6 +80,7 @@ class _CreateQrState extends State<CreateQr> {
                       prefixIcon: const Icon(Icons.title)),
                 ),
                 const SizedBox(height: 20),
+
                 /// Link/Text input field
                 TextField(
                   controller: _linkController,
@@ -91,6 +96,7 @@ class _CreateQrState extends State<CreateQr> {
                   obscureText: true,
                 ),
                 const SizedBox(height: 20),
+
                 /// Create button
                 SizedBox(
                   width: 150,
@@ -142,6 +148,7 @@ class _CreateQrState extends State<CreateQr> {
                     ),
                   ),
                 ),
+
                 /// Error message display
                 if (_errorMessage.isNotEmpty)
                   Padding(
@@ -156,6 +163,7 @@ class _CreateQrState extends State<CreateQr> {
           ),
         ],
       ),
+      bottomNavigationBar: const Footer(),
     );
   }
 }

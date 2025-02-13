@@ -1,3 +1,5 @@
+import 'package:Mobile/templates/footer.dart';
+import 'package:Mobile/templates/header.dart';
 import 'package:flutter/material.dart';
 import 'package:Mobile/createQr.dart'; // Import the CreateQr widget
 
@@ -87,12 +89,11 @@ class DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const Header(),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Image.asset('assets/qonnect.png', height: 50, width: 250),
-            const Align(alignment: Alignment.center),
             if (buttons.length >= 12)
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -141,6 +142,7 @@ class DashboardState extends State<Dashboard> {
           ],
         ),
       ),
+      bottomNavigationBar: const Footer(),
     );
   }
 }
