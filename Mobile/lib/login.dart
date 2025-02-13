@@ -12,7 +12,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final AuthService _authService = AuthService(); // Added AuthService
-  String apiUrl = 'https://localhost:5287/api/Users/login';
+  String apiUrl = 'https://localhost:7173/api/Users/login';
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   String result = ''; // To store the result from the API call
