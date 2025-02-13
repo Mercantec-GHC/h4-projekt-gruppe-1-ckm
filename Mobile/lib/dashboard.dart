@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:Mobile/createQr.dart'; // Import the CreateQr widget
 
+// Dashboard Widget
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
 
@@ -8,6 +9,7 @@ class Dashboard extends StatefulWidget {
   DashboardState createState() => DashboardState();
 }
 
+// Dashboard State
 class DashboardState extends State<Dashboard> {
   List<Widget> buttons = [];
 
@@ -17,6 +19,7 @@ class DashboardState extends State<Dashboard> {
     buttons.add(createButton());
   }
 
+  // Method to create a button
   Widget createButton() {
     return Column(
       children: [
@@ -55,6 +58,7 @@ class DashboardState extends State<Dashboard> {
   String placeholderTitle = "Title";
   String? qrTitle;
 
+  // Method to build the title
   Widget buildTitle() {
     return Text(
       qrTitle ?? placeholderTitle,
@@ -66,12 +70,14 @@ class DashboardState extends State<Dashboard> {
     );
   }
 
+  // Method to set the QR title
   void setQrTitle(String title) {
     setState(() {
       qrTitle = title;
     });
   }
 
+  // Method to add a new QR button
   void addQrButton() {
     setState(() {
       buttons.add(createButton());
@@ -86,9 +92,7 @@ class DashboardState extends State<Dashboard> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Image.asset('assets/qonnect.png', height: 50, width: 250),
-            const Align(
-              alignment: Alignment.center,
-            ),
+            const Align(alignment: Alignment.center),
             if (buttons.length >= 12)
               Padding(
                 padding: const EdgeInsets.all(8.0),

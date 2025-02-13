@@ -1,6 +1,10 @@
+/// This file contains the implementation of a Flutter widget that allows users to create a QR code by providing a title and a link/text.
+
+/// Import necessary packages
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+/// CreateQr widget
 class CreateQr extends StatefulWidget {
   const CreateQr({super.key});
 
@@ -8,14 +12,19 @@ class CreateQr extends StatefulWidget {
   _CreateQrState createState() => _CreateQrState();
 }
 
+/// State class for CreateQr widget
 class _CreateQrState extends State<CreateQr> {
+  /// Error message to display in case of an error
   String _errorMessage = '';
+
+  /// Controllers for the text fields
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _linkController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      /// App bar with a back button
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -29,11 +38,12 @@ class _CreateQrState extends State<CreateQr> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
+          /// Logo image
           Image.asset('assets/qonnect.png', height: 50, width: 250),
           const Align(
             alignment: Alignment.center,
           ),
-          // The header text
+          /// Header text
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Text(
@@ -53,6 +63,7 @@ class _CreateQrState extends State<CreateQr> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+                /// Title input field
                 TextField(
                   controller: _titleController,
                   decoration: InputDecoration(
@@ -65,6 +76,7 @@ class _CreateQrState extends State<CreateQr> {
                       prefixIcon: const Icon(Icons.title)),
                 ),
                 const SizedBox(height: 20),
+                /// Link/Text input field
                 TextField(
                   controller: _linkController,
                   decoration: InputDecoration(
@@ -79,6 +91,7 @@ class _CreateQrState extends State<CreateQr> {
                   obscureText: true,
                 ),
                 const SizedBox(height: 20),
+                /// Create button
                 SizedBox(
                   width: 150,
                   child: ElevatedButton(
@@ -129,6 +142,7 @@ class _CreateQrState extends State<CreateQr> {
                     ),
                   ),
                 ),
+                /// Error message display
                 if (_errorMessage.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(top: 20),
