@@ -103,14 +103,11 @@ class _AccountState extends State<Account> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const Header(),
-      backgroundColor: const Color.fromARGB(255, 247, 239, 251),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image.asset('assets/qonnect.png', height: 50, width: 250),
-            const SizedBox(height: 10),
             const Text("Account",
                 style: TextStyle(
                     fontSize: 24,
@@ -193,16 +190,6 @@ class _AccountState extends State<Account> {
               Text(errorMessage!,
                   style: const TextStyle(
                       color: Colors.red, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: isChanged ? saveChanges : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: isChanged ? Colors.purple : Colors.grey,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-              ),
-              child: const Center(child: Text("Save Changes")),
-            ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: logout, // Call logout function

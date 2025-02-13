@@ -11,7 +11,7 @@ class Signup extends StatefulWidget {
 }
 
 class _SignupState extends State<Signup> {
-  String apiUrl = 'https://localhost:5287/api/Users/signUp';
+  String apiUrl = 'https://localhost:7173/api/Users/signUp';
   final TextEditingController emailController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
