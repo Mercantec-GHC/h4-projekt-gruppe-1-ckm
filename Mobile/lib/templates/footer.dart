@@ -1,3 +1,4 @@
+import 'package:Mobile/account.dart';
 import 'package:Mobile/camera.dart';
 import 'package:Mobile/dashboard.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,7 @@ class Footer extends StatelessWidget {
                 constraints: const BoxConstraints(),
                 onPressed: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const Dashboard()),
+                  MaterialPageRoute(builder: (context) => const Account()),
                 ),
                 icon: const Icon(Icons.person_2_rounded),
               ),
