@@ -79,6 +79,7 @@ node_modules/
 *.der
 *.pfx
 *.cer
+
 API/bin/Debug/net8.0/API.dll
 /API/bin
 API/appsettings.json
