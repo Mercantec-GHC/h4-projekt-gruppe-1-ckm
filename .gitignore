@@ -81,3 +81,5 @@ node_modules/
 *.cer
 API/bin/Debug/net8.0/API.dll
 /API/bin
+API/appsettings.json
+/API/obj

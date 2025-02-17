@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:Mobile/templates/footer.dart';
 import 'package:Mobile/auth_service.dart';
+import 'package:Mobile/dashboard.dart';
 
 // Main widget for creating QR code
 class CreateQr extends StatefulWidget {
@@ -14,10 +15,12 @@ class CreateQr extends StatefulWidget {
 }
 
 class _CreateQrState extends State<CreateQr> {
+  String result = '';
   String _errorMessage = '';
+  Future<QrCode>? _futureQrCode;
+  final AuthService _authService = AuthService(); // Added AuthService
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _linkController = TextEditingController();
-  Future<QrCode>? _futureQrCode;
 
   // Function to create QR code by making a POST request
   Future<QrCode> createQrCode(String title, String link) async {
@@ -32,13 +35,33 @@ class _CreateQrState extends State<CreateQr> {
       }),
     );
 
-    if (response.statusCode == 200) {
-      return QrCode.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    if (response.statusCode == 200 || response.statusCode == 201) 
+    {
+      final responseData = jsonDecode(response.body);
+      String? token = responseData['token'];
+      if (token != null) {
+          await _authService.saveToken(token); // Save token securely
+          setState(() {
+            result = 'Login Successful!';
+          });
+
+        // 🚀 Redirect to Dashboard after successful login
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const Dashboard()),
+        );
+        return QrCode.fromJson(responseData);
+      } 
+      else {
+        throw Exception('Failed to create QR code.');
+      }
+
     } else {
       throw Exception('Failed to create QR code.');
     }
   }
 
+  // This is the body of the CreateQr widget
   @override
   Widget build(BuildContext context) {
     return Scaffold(
