@@ -102,7 +102,6 @@ namespace API.Controllers
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdClaim))
             {
-                Console.WriteLine(userIdClaim);
                 return Unauthorized(new { Message = "User not authenticated." });
             }
 
