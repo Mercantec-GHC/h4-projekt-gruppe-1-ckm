@@ -1,8 +1,3 @@
-using API.Models;
-using Microsoft.AspNetCore.Identity;
-using System;
-using System.Configuration;
- 
 namespace API.Controllers
 {
     [Route("api/[controller]")]
