@@ -7,6 +7,7 @@ import 'package:Mobile/auth_service.dart';
 import 'package:Mobile/dashboard.dart';
 
 // Main widget for creating QR code
+
 class CreateQr extends StatefulWidget {
   const CreateQr({super.key});
 
@@ -16,207 +17,177 @@ class CreateQr extends StatefulWidget {
 
 class _CreateQrState extends State<CreateQr> {
   String result = '';
-  String _errorMessage = '';
-  Future<QrCode>? _futureQrCode;
+  String apiUrl = 'https://localhost:7173/api/QrCodes';
   final AuthService _authService = AuthService(); // Added AuthService
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _linkController = TextEditingController();
 
-  // Function to create QR code by making a POST request
-  Future<QrCode> createQrCode(String title, String link) async {
-    final response = await http.post(
-      Uri.parse('https://localhost:7173/api/QrCodes'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'title': title,
-        'link': link,
-      }),
-    );
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _linkController.dispose();
+    super.dispose();
+  }
 
-    if (response.statusCode == 200 || response.statusCode == 201) 
-    {
-      final responseData = jsonDecode(response.body);
-      String? token = responseData['token'];
-      if (token != null) {
+  // Function to create QR code by making a POST request
+
+  Future<void> createQrCode() async {
+    try {
+      Map<String, dynamic> body = {
+        'title': _titleController.text.trim(),
+        'link': _linkController.text.trim(),
+      };
+
+      final response = await http.post(Uri.parse(apiUrl),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(body));
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final responseData = jsonDecode(response.body);
+
+        String? token = responseData['token'];
+
+        if (token != null) {
           await _authService.saveToken(token); // Save token securely
+
           setState(() {
             result = 'Login Successful!';
           });
 
-        // 🚀 Redirect to Dashboard after successful login
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const Dashboard()),
-        );
-        return QrCode.fromJson(responseData);
-      } 
-      else {
-        throw Exception('Failed to create QR code.');
+          // Redirect to Dashboard after successful login
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const Dashboard()),
+          );
+        } else {
+          setState(() {
+            result = 'Qr Code creation failed: Token not received';
+          });
+        }
+      } else {
+        setState(() {
+          result = 'Qr Code creation failed: ${response.body}';
+        });
       }
-
-    } else {
-      throw Exception('Failed to create QR code.');
+    } catch (e) {
+      setState(() {
+        result = 'Error: $e';
+      });
     }
   }
 
   // This is the body of the CreateQr widget
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppBar(context),
-      body: _buildBody(),
-      bottomNavigationBar: const Footer(),
-    );
-  }
-
-  // Build the app bar with a back button
-  AppBar _buildAppBar(BuildContext context) {
-    return AppBar(
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back),
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
-      ),
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-    );
-  }
-
-  // Build the main body of the screen
-  Widget _buildBody() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Image.asset('assets/qonnect.png', height: 50, width: 250),
-        const Align(alignment: Alignment.center),
-        _buildTitle(),
-        const Align(alignment: Alignment.center),
-        _buildForm(),
-      ],
-    );
-  }
-
-  // Build the title section
-  Padding _buildTitle() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Text(
-        "Create",
-        style: TextStyle(
-          color: Color(0xff6F58C9),
-          fontSize: 30,
-          fontWeight: FontWeight.bold,
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
+            width: double.infinity,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                const Column(
+                  children: <Widget>[
+                    SizedBox(height: 60.0),
+                    Image(
+                      image: AssetImage('assets/qonnect.png'),
+                      height: 70,
+                    ),
+                    SizedBox(height: 20.0),
+                    Text(
+                      "Login",
+                      style: TextStyle(
+                        color: Color(0xff6F58C9),
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Center(
+                  child: Container(
+                    width: 320, // 10 wider than the text fields and buttons
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(18),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 5,
+                          blurRadius: 7,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      children: <Widget>[
+                        TextField(
+                          controller: _titleController,
+                          decoration: InputDecoration(
+                              hintText: "Title",
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(18),
+                                  borderSide: BorderSide.none),
+                              fillColor: Colors.purple.withOpacity(0.1),
+                              filled: true,
+                              prefixIcon: const Icon(Icons.person)),
+                        ),
+                        const SizedBox(height: 20),
+                        TextField(
+                          controller: _linkController,
+                          decoration: InputDecoration(
+                            hintText: "Link/Text",
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(18),
+                                borderSide: BorderSide.none),
+                            fillColor: Colors.purple.withOpacity(0.1),
+                            filled: true,
+                            prefixIcon: const Icon(Icons.password),
+                          ),
+                          obscureText: true,
+                        ),
+                        const SizedBox(height: 20.0),
+                        Text(
+                          result,
+                          style: const TextStyle(fontSize: 16.0),
+                        ),
+                        const SizedBox(height: 20),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: createQrCode,
+                            style: ElevatedButton.styleFrom(
+                              shape: const StadiumBorder(),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              backgroundColor: const Color(0xff6F58C9),
+                              foregroundColor: Colors.white,
+                            ),
+                            child: const Text(
+                              "Create",
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
+        bottomNavigationBar: const Footer(),
       ),
-    );
-  }
-
-  // Build the form with text fields and button
-  Padding _buildForm() {
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          _buildTextField(_titleController, "Title", Icons.title),
-          const SizedBox(height: 20),
-          _buildTextField(_linkController, "Link/Text", Icons.link),
-          const SizedBox(height: 20),
-          _buildCreateButton(),
-          if (_errorMessage.isNotEmpty) _buildErrorMessage(),
-          if (_futureQrCode != null) buildFutureBuilder(),
-        ],
-      ),
-    );
-  }
-
-  // Build a text field with given controller, hint text, and icon
-  TextField _buildTextField(
-      TextEditingController controller, String hintText, IconData icon) {
-    return TextField(
-      controller: controller,
-      decoration: InputDecoration(
-        hintText: hintText,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
-          borderSide: BorderSide.none,
-        ),
-        fillColor: Colors.purple.withOpacity(0.1),
-        filled: true,
-        prefixIcon: Icon(icon),
-      ),
-    );
-  }
-
-  // Build the create button
-  SizedBox _buildCreateButton() {
-    return SizedBox(
-      width: 150,
-      child: ElevatedButton(
-        onPressed: () {
-          setState(() {
-            _errorMessage = '';
-            _futureQrCode = createQrCode(
-              _titleController.text,
-              _linkController.text,
-            );
-          });
-        },
-        style: ElevatedButton.styleFrom(
-          shape: const StadiumBorder(),
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          backgroundColor: const Color(0xff6F58C9),
-          foregroundColor: Colors.white,
-        ),
-        child: const Text(
-          "Create",
-          style: TextStyle(fontSize: 20),
-        ),
-      ),
-    );
-  }
-
-  // Build the error message widget
-  Padding _buildErrorMessage() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 20),
-      child: Text(
-        _errorMessage,
-        style: TextStyle(color: Colors.red),
-      ),
-    );
-  }
-
-  // Build the future builder to handle the QR code creation result
-  FutureBuilder<QrCode> buildFutureBuilder() {
-    return FutureBuilder<QrCode>(
-      future: _futureQrCode,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return Text('QR Code created: ${snapshot.data!.title}');
-        } else if (snapshot.hasError) {
-          return Text('${snapshot.error}');
-        }
-        return const CircularProgressIndicator();
-      },
-    );
-  }
-}
-
-// Model class for QR code
-class QrCode {
-  final String title;
-  final String link;
-
-  QrCode({required this.title, required this.link});
-
-  factory QrCode.fromJson(Map<String, dynamic> json) {
-    return QrCode(
-      title: json['title'] as String,
-      link: json['link'] as String,
     );
   }
 }
