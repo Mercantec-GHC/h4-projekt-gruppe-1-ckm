@@ -50,8 +50,6 @@ class DashboardState extends State<Dashboard> {
             },
           ),
         ),
-        const SizedBox(
-            height: 8), // Add some space between the button and the title
         buildTitle(),
       ],
     );
@@ -94,7 +92,7 @@ class DashboardState extends State<Dashboard> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            if (buttons.length >= 12)
+            if (buttons.length >= 15)
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextField(
@@ -107,11 +105,15 @@ class DashboardState extends State<Dashboard> {
                   ),
                 ),
               ),
-            if (buttons.length >= 12)
+            if (buttons.length >= 15)
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xff6F58C9),
+                      foregroundColor: Colors.white,
+                    ),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -132,8 +134,8 @@ class DashboardState extends State<Dashboard> {
                 mainAxisSpacing: 30,
                 childAspectRatio: 1, // Make the buttons square
               ),
-              itemCount: buttons.length > 12
-                  ? 12
+              itemCount: buttons.length > 15
+                  ? 15
                   : buttons.length, // Limit the number of buttons displayed
               itemBuilder: (context, index) {
                 return buttons[index];
