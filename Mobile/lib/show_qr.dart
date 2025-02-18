@@ -5,6 +5,7 @@ import 'package:Mobile/templates/footer.dart';
 import 'package:Mobile/templates/header.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class ShowQr extends StatefulWidget {
   const ShowQr({super.key});
@@ -17,6 +18,29 @@ class _ShowQrState extends State<ShowQr> {
   // Error message to display in case of an error
   String? errorMessage;
   String result = '';
+  String titleHint = "Fetching title...";
+
+  Future<void> _getQr() async {
+    String? token = await AuthService().getToken();
+    if (token == null) return;
+
+    var response = await http
+        .get(Uri.parse('https://localhost:7173/api/QrCodes/{id}'), headers: {
+      "Content-Type": "application/json",
+      "Authorization": 'Barrer $token'
+    });
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+
+      setState(() {
+        titleHint = data['title'] ?? 'Enter Title';
+      });
+    } else {
+      setState(() {
+        errorMessage = "Get failed: ${response.body}: ${response.statusCode}";
+      });
+    }
+  }
 
   Future<void> _deleteQr() async {
     String? token = await AuthService().getToken();
@@ -125,7 +149,7 @@ class _ShowQrState extends State<ShowQr> {
           ),
           Image.asset('assets/qr.png', width: 400),
           Text(
-            'Tiktok',
+            titleHint,
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
           ),
           SizedBox(
