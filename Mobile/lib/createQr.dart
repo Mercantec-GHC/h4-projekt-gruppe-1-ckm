@@ -1,10 +1,10 @@
-import 'dart:async';
-import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:Mobile/templates/footer.dart';
 import 'package:Mobile/auth_service.dart';
+import 'package:http/http.dart' as http;
 import 'package:Mobile/dashboard.dart';
+import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'dart:async';
 
 // Main widget for creating QR code
 
@@ -12,37 +12,51 @@ class CreateQr extends StatefulWidget {
   const CreateQr({super.key});
 
   @override
-  _CreateQrState createState() => _CreateQrState();
+  CreateQrState createState() => CreateQrState();
 }
 
-class _CreateQrState extends State<CreateQr> {
-  String result = '';
+class CreateQrState extends State<CreateQr> {
+  String result = ''; // To store the result from the API call
   String apiUrl = 'https://localhost:7173/api/QrCodes';
   final AuthService _authService = AuthService(); // Added AuthService
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _linkController = TextEditingController();
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController textController = TextEditingController();
 
   @override
   void dispose() {
-    _titleController.dispose();
-    _linkController.dispose();
+    titleController.dispose();
+    textController.dispose();
     super.dispose();
   }
 
-  // Function to create QR code by making a POST request
-
-  Future<void> createQrCode() async {
+  Future<void> _postQrCode() async {
     try {
+      // Retrieve the token from the AuthService
+      String? token = await AuthService().getToken();
+
+      if (token == null) {
+        setState(() {
+          result = 'Error: Token not found. Please log in again.';
+        });
+        return;
+      }
+
       Map<String, dynamic> body = {
-        'title': _titleController.text.trim(),
-        'link': _linkController.text.trim(),
+        'title': titleController.text.trim(),
+        'text': textController.text.trim(),
       };
 
-      final response = await http.post(Uri.parse(apiUrl),
-          headers: <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8',
-          },
-          body: jsonEncode(body));
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token', // Include the token in the headers
+        },
+        body: jsonEncode(body),
+      );
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseData = jsonDecode(response.body);
@@ -51,9 +65,9 @@ class _CreateQrState extends State<CreateQr> {
 
         if (token != null) {
           await _authService.saveToken(token); // Save token securely
-
+          if (!mounted) return;
           setState(() {
-            result = 'Login Successful!';
+            result = 'Qr Code created successfully!';
           });
 
           // Redirect to Dashboard after successful login
@@ -62,16 +76,19 @@ class _CreateQrState extends State<CreateQr> {
             MaterialPageRoute(builder: (context) => const Dashboard()),
           );
         } else {
+          if (!mounted) return;
           setState(() {
             result = 'Qr Code creation failed: Token not received';
           });
         }
       } else {
+        if (!mounted) return;
         setState(() {
           result = 'Qr Code creation failed: ${response.body}';
         });
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         result = 'Error: $e';
       });
@@ -79,7 +96,6 @@ class _CreateQrState extends State<CreateQr> {
   }
 
   // This is the body of the CreateQr widget
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -102,7 +118,7 @@ class _CreateQrState extends State<CreateQr> {
                     ),
                     SizedBox(height: 20.0),
                     Text(
-                      "Login",
+                      "Create Qr Code",
                       style: TextStyle(
                         color: Color(0xff6F58C9),
                         fontSize: 30,
@@ -116,45 +132,35 @@ class _CreateQrState extends State<CreateQr> {
                 Center(
                   child: Container(
                     width: 320, // 10 wider than the text fields and buttons
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(18),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 5,
-                          blurRadius: 7,
-                          offset: Offset(0, 3),
-                        ),
-                      ],
-                    ),
                     padding: const EdgeInsets.all(20),
                     child: Column(
                       children: <Widget>[
                         TextField(
-                          controller: _titleController,
+                          controller: titleController,
                           decoration: InputDecoration(
-                              hintText: "Title",
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(18),
-                                  borderSide: BorderSide.none),
-                              fillColor: Colors.purple.withOpacity(0.1),
-                              filled: true,
-                              prefixIcon: const Icon(Icons.person)),
+                            hintText: "Title",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(18),
+                              borderSide: BorderSide.none,
+                            ),
+                            fillColor: Colors.purple.withOpacity(0.1),
+                            filled: true,
+                            prefixIcon: const Icon(Icons.title),
+                          ),
                         ),
                         const SizedBox(height: 20),
                         TextField(
-                          controller: _linkController,
+                          controller: textController,
                           decoration: InputDecoration(
                             hintText: "Link/Text",
                             border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(18),
-                                borderSide: BorderSide.none),
+                              borderRadius: BorderRadius.circular(18),
+                              borderSide: BorderSide.none,
+                            ),
                             fillColor: Colors.purple.withOpacity(0.1),
                             filled: true,
-                            prefixIcon: const Icon(Icons.password),
+                            prefixIcon: const Icon(Icons.link),
                           ),
-                          obscureText: true,
                         ),
                         const SizedBox(height: 20.0),
                         Text(
@@ -165,7 +171,7 @@ class _CreateQrState extends State<CreateQr> {
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: createQrCode,
+                            onPressed: _postQrCode,
                             style: ElevatedButton.styleFrom(
                               shape: const StadiumBorder(),
                               padding: const EdgeInsets.symmetric(vertical: 16),

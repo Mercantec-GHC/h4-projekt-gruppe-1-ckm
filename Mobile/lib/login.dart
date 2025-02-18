@@ -7,16 +7,17 @@ import 'dart:convert';
 
 class Login extends StatefulWidget {
   const Login({super.key});
+  
   @override
   _LoginState createState() => _LoginState();
 }
 
 class _LoginState extends State<Login> {
-  final AuthService _authService = AuthService(); // Added AuthService
+  String result = ''; // To store the result from the API call
   String apiUrl = 'https://localhost:7173/api/Users/login';
+  final AuthService _authService = AuthService(); // Added AuthService
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  String result = ''; // To store the result from the API call
 
   @override
   void dispose() {
