@@ -65,7 +65,6 @@ class CreateQrState extends State<CreateQr> {
 
         if (token != null) {
           await _authService.saveToken(token); // Save token securely
-          if (!mounted) return;
           setState(() {
             result = 'Qr Code created successfully!';
           });
@@ -76,19 +75,16 @@ class CreateQrState extends State<CreateQr> {
             MaterialPageRoute(builder: (context) => const Dashboard()),
           );
         } else {
-          if (!mounted) return;
           setState(() {
             result = 'Qr Code creation failed: Token not received';
           });
         }
       } else {
-        if (!mounted) return;
         setState(() {
           result = 'Qr Code creation failed: ${response.body}';
         });
       }
     } catch (e) {
-      if (!mounted) return;
       setState(() {
         result = 'Error: $e';
       });
