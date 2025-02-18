@@ -1,4 +1,5 @@
 import 'package:Mobile/editQr.dart';
+import 'package:Mobile/show_qr.dart';
 import 'package:Mobile/templates/footerOnlyHome.dart';
 import 'package:flutter/material.dart';
 import 'package:Mobile/signup.dart';
@@ -20,6 +21,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const Login(),
         '/dashboard': (context) => const Dashboard(),
         '/edit': (context) => const EditQr(),
+        '/show': (context) => const ShowQr(),
       },
     );
   }
@@ -109,6 +111,23 @@ class HomeScreen extends StatelessWidget {
               ),
               onPressed: () {
                 Navigator.pushNamed(context, '/edit');
+              },
+            ),
+          ),
+          SizedBox(
+            height: 50,
+            width: 140,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xff6F58C9),
+                foregroundColor: Colors.white,
+              ),
+              child: const Text(
+                'Show',
+                style: TextStyle(fontSize: 20),
+              ),
+              onPressed: () {
+                Navigator.pushNamed(context, '/show');
               },
             ),
           ),
