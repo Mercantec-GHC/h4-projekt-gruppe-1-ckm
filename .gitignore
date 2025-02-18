@@ -82,3 +82,4 @@ node_modules/
 /API/bin
 
 /API/obj
+API/appsettings.json
