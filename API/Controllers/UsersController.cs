@@ -212,8 +212,8 @@ namespace API.Controllers
             {
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim("email", user.Email), 
-                new Claim("name", user.Username), 
-                new Claim("id", user.Id.ToString()) 
+                new Claim("name", user.Username),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             };
 
 
