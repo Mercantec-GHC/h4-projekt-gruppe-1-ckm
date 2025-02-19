@@ -10,14 +10,23 @@
         {
             _context = context;
         }
-
+        [Authorize]
         // GET: api/User_QrCode
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User_QrCode>>> GetUserQrCodes()
+        public async Task<ActionResult<IEnumerable<User_QrCodeDTO>>> GetQrCodes()
         {
-            return await _context.UserQrCodes.ToListAsync();
+            var qrCodes = await _context.UserQrCodes 
+                .Select(q => new User_QrCodeDTO
+                {
+                    User_id = q.User_id,
+                    Qr_id = q.Qr_id
+                })
+                .ToListAsync();
+
+            return Ok(qrCodes);
         }
 
+        [Authorize]
         // GET: api/User_QrCode/5
         [HttpGet("{id}")]
         public async Task<ActionResult<User_QrCode>> GetUser_QrCode(int id)
@@ -63,6 +72,7 @@
         }
 
         // POST: api/User_QrCode
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<User_QrCode>> PostUser_QrCode(User_QrCodeDTO user_QrCode)
         {
@@ -95,6 +105,7 @@
         }
 
         // DELETE: api/User_QrCode/5
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser_QrCode(int id)
         {
