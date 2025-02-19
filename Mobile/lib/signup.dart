@@ -1,3 +1,4 @@
+import 'package:Mobile/templates/footerOnlyHome.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -24,30 +25,31 @@ class _SignupState extends State<Signup> {
     super.dispose();
   }
 
-  Future<void> _postData() async {
+  Future<void> _postUser() async {
     try {
+      // 🔹 Build the request body
+      Map<String, dynamic> body = {
+        'email': emailController.text.trim(),
+        'username': usernameController.text.trim(),
+        'password': passwordController.text.trim(),
+      };
+
       final response = await http.post(
         Uri.parse(apiUrl),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        body: jsonEncode(<String, dynamic>{
-          'email': emailController.text,
-          'username': usernameController.text,
-          'password': passwordController.text,
-        }),
+        body: jsonEncode(body),
       );
 
-      if (response.statusCode == 201) {
-        // Successful POST request, handle the response here
-        final responseData = jsonDecode(response.body);
+      if (response.statusCode == 200 || response.statusCode == 201) {
         setState(() {
-          result =
-              'ID: ${responseData['id']}\nUsername: ${responseData['Username']}\nEmail: ${responseData['email']}\nEmail: ${responseData['HashedPassword']}';
+          result = 'Success: ${response.body}';
         });
       } else {
-        // If the server returns an error response, throw an exception
-        throw Exception('Failed to post data');
+        setState(() {
+          result = 'signup Failed';
+        });
       }
     } catch (e) {
       setState(() {
@@ -146,19 +148,6 @@ class _SignupState extends State<Signup> {
                           ),
                           obscureText: true,
                         ),
-                        const SizedBox(height: 20),
-                        TextField(
-                          decoration: InputDecoration(
-                            hintText: "Confirm Password",
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(18),
-                                borderSide: BorderSide.none),
-                            fillColor: Colors.purple.withOpacity(0.1),
-                            filled: true,
-                            prefixIcon: const Icon(Icons.password),
-                          ),
-                          obscureText: true,
-                        ),
                         const SizedBox(height: 20.0),
                         Text(
                           result,
@@ -168,7 +157,7 @@ class _SignupState extends State<Signup> {
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: _postData,
+                            onPressed: _postUser,
                             style: ElevatedButton.styleFrom(
                               shape: const StadiumBorder(),
                               padding: const EdgeInsets.symmetric(vertical: 16),
@@ -218,6 +207,7 @@ class _SignupState extends State<Signup> {
             ),
           ),
         ),
+        bottomNavigationBar: const FooterOnlyHome(),
       ),
     );
   }
