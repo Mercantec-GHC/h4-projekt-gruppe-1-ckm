@@ -1,9 +1,9 @@
-import 'package:Mobile/templates/footer.dart';
-import 'package:Mobile/templates/header.dart';
 import 'package:flutter/material.dart';
-import 'package:Mobile/createQr.dart'; // Import the CreateQr widget
+import 'package:Mobile/createQr.dart';
+import 'package:http/http.dart' as http;
+import 'auth_service.dart';
+import 'dart:convert';
 
-// Dashboard Widget
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
 
@@ -11,138 +11,153 @@ class Dashboard extends StatefulWidget {
   DashboardState createState() => DashboardState();
 }
 
-// Dashboard State
 class DashboardState extends State<Dashboard> {
-  List<Widget> buttons = [];
+  String? errorMessage;
+  // Stores user's QR codes
+  List<String> userQrCodes = [];
+  // Stores all QR codes
+  List<String> allQrCodes = [];
 
   @override
   void initState() {
     super.initState();
-    buttons.add(createButton());
+    _fetchQrCodes();
   }
 
-  // Method to create a button
-  Widget createButton() {
-    return Column(
-      children: [
-        SizedBox(
-          width: 100, // Set a fixed width
-          height: 100, // Set a fixed height
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color.fromARGB(255, 184, 184, 184),
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10), // Rounded corners
-              ),
-            ),
-            child: const Icon(
-              Icons.add,
-              size: 60, // Change the size of the icon
-              color:
-                  Color.fromARGB(255, 0, 0, 0), // Change the color of the icon
-            ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CreateQr()),
-              );
-            },
-          ),
-        ),
-        const SizedBox(
-            height: 8), // Add some space between the button and the title
-        buildTitle(),
-      ],
-    );
+  // Fetch user's QR codes
+  Future<void> _fetchUserQrCodes() async {
+    String? token = await AuthService().getToken();
+    if (token == null) return;
+
+    try {
+      var response = await http.get(
+        Uri.parse('https://localhost:7173/api/User_QrCode'),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": 'Bearer $token'
+        },
+      );
+
+      if (response.statusCode == 200) {
+        List<dynamic> qrDataList = jsonDecode(response.body);
+
+        setState(() {
+          userQrCodes =
+              qrDataList.map((qr) => qr["qrCode"].toString()).toList();
+        });
+      } else {
+        setState(() {
+          errorMessage =
+              "Error: ${response.body} (Status: ${response.statusCode})";
+        });
+      }
+    } catch (e) {
+      setState(() {
+        errorMessage = "Failed to fetch user's QR codes: $e";
+      });
+    }
   }
 
-  String placeholderTitle = "Title";
-  String? qrTitle;
+  // Fetch all available QR codes
+  Future<void> _fetchAllQrCodes() async {
+    try {
+      var response = await http.get(
+        Uri.parse('https://localhost:7173/api/QrCodes'),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      );
 
-  // Method to build the title
-  Widget buildTitle() {
-    return Text(
-      qrTitle ?? placeholderTitle,
-      style: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        color: Color(0xff6F58C9),
-      ),
-    );
+      if (response.statusCode == 200) {
+        List<dynamic> qrDataList = jsonDecode(response.body);
+
+        setState(() {
+          allQrCodes = qrDataList.map((qr) => qr["qrCode"].toString()).toList();
+        });
+      } else {
+        setState(() {
+          errorMessage =
+              "Error: ${response.body} (Status: ${response.statusCode})";
+        });
+      }
+    } catch (e) {
+      setState(() {
+        errorMessage = "Failed to fetch all QR codes: $e";
+      });
+    }
   }
 
-  // Method to set the QR title
-  void setQrTitle(String title) {
-    setState(() {
-      qrTitle = title;
-    });
-  }
-
-  // Method to add a new QR button
-  void addQrButton() {
-    setState(() {
-      buttons.add(createButton());
-    });
+  // Fetch both user's QR codes and all available QR codes
+  Future<void> _fetchQrCodes() async {
+    await _fetchUserQrCodes();
+    await _fetchAllQrCodes();
   }
 
   @override
   Widget build(BuildContext context) {
+    List<String> displayedQrCodes = [...userQrCodes, ...allQrCodes];
+
     return Scaffold(
-      appBar: const Header(),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            if (buttons.length >= 12)
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Search QR Codes',
-                    prefixIcon: Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                ),
-              ),
-            if (buttons.length >= 12)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+      appBar: AppBar(title: Text("Dashboard")),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            childAspectRatio: 1,
+          ),
+          itemCount: displayedQrCodes.length + 1,
+          itemBuilder: (context, index) {
+            if (index < displayedQrCodes.length) {
+              return Column(
                 children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => CreateQr()),
-                      );
-                    },
-                    child: const Text('Add QR Code'),
+                  Container(
+                    height: 100,
+                    width: 100,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: EdgeInsets.all(8),
+                    child: Image.network(displayedQrCodes[index],
+                        fit: BoxFit.cover),
                   ),
+                  SizedBox(height: 4),
+                  Text("Title", style: TextStyle(fontSize: 14)),
                 ],
-              ),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(20),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                crossAxisSpacing: 30,
-                mainAxisSpacing: 30,
-                childAspectRatio: 1, // Make the buttons square
-              ),
-              itemCount: buttons.length > 12
-                  ? 12
-                  : buttons.length, // Limit the number of buttons displayed
-              itemBuilder: (context, index) {
-                return buttons[index];
-              },
-            ),
-          ],
+              );
+            } else {
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => CreateQr()),
+                  );
+                },
+                child: Column(
+                  children: [
+                    Container(
+                      height: 100,
+                      width: 100,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Center(
+                        child: Icon(Icons.add, size: 40, color: Colors.black),
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text("Add QR-code", style: TextStyle(fontSize: 14)),
+                  ],
+                ),
+              );
+            }
+          },
         ),
       ),
-      bottomNavigationBar: const Footer(),
     );
   }
 }

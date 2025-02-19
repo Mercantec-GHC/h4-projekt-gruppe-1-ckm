@@ -42,7 +42,7 @@ class _EditQrState extends State<EditQr> {
           Uri.parse('https://localhost:7173/api/QrCodes/{id}'),
           headers: {
             "Content-Type": "application/json",
-            "Authorization": 'Barrer $token'
+            "Authorization": 'Bearer $token'
           },
           body: jsonEncode(updatedQr));
       if (response.statusCode == 200 || response.statusCode == 204) {
@@ -67,7 +67,7 @@ class _EditQrState extends State<EditQr> {
     var response = await http
         .get(Uri.parse('https://localhost:7173/api/QrCodes/{id}'), headers: {
       "Content-Type": "application/json",
-      "Authorization": 'Barrer $token'
+      "Authorization": 'Bearer $token'
     });
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);

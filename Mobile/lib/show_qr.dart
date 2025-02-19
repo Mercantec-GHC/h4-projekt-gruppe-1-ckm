@@ -27,7 +27,7 @@ class _ShowQrState extends State<ShowQr> {
     var response = await http
         .get(Uri.parse('https://localhost:7173/api/QrCodes/{id}'), headers: {
       "Content-Type": "application/json",
-      "Authorization": 'Barrer $token'
+      "Authorization": 'Bearer $token'
     });
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
@@ -50,7 +50,7 @@ class _ShowQrState extends State<ShowQr> {
         Uri.parse('https://localhost:7173/api/QrCodes/{id}'),
         headers: {
           "Content-Type": "application/json",
-          "Authorization": 'Barrer $token'
+          "Authorization": 'Bearer $token'
         },
       );
       if (response.statusCode == 200 || response.statusCode == 204) {
