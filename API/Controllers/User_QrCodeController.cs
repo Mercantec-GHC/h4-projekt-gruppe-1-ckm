@@ -13,10 +13,19 @@
 
         // GET: api/User_QrCode
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User_QrCode>>> GetUserQrCodes()
+        public async Task<ActionResult<IEnumerable<User_QrCodeDTO>>> GetQrCodes()
         {
-            return await _context.UserQrCodes.ToListAsync();
+            var qrCodes = await _context.UserQrCodes // Corrected DbSet name
+                .Select(q => new User_QrCodeDTO
+                {
+                    User_id = q.User_id,
+                    Qr_id = q.Qr_id
+                })
+                .ToListAsync();
+
+            return Ok(qrCodes);
         }
+
 
         // GET: api/User_QrCode/5
         [HttpGet("{id}")]
