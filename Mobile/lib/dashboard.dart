@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:Mobile/createQr.dart';
 import 'package:http/http.dart' as http;
+import 'package:qr_flutter/qr_flutter.dart';
 import 'auth_service.dart';
 import 'dart:convert';
+import 'package:Mobile/templates/footer.dart';
+import 'package:Mobile/templates/header.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -13,151 +17,180 @@ class Dashboard extends StatefulWidget {
 
 class DashboardState extends State<Dashboard> {
   String? errorMessage;
-  // Stores user's QR codes
-  List<String> userQrCodes = [];
-  // Stores all QR codes
-  List<String> allQrCodes = [];
+  List<Map<String, String>> userQrCodes = [];
 
   @override
   void initState() {
     super.initState();
-    _fetchQrCodes();
+    _fetchUserQrCodes();
   }
 
-  // Fetch user's QR codes
-  Future<void> _fetchUserQrCodes() async {
-    String? token = await AuthService().getToken();
-    if (token == null) return;
+Future<void> _fetchUserQrCodes() async {
+  String? token = await AuthService().getToken();
+  if (token == null) return;
+  Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+  String userId = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"].toString();
 
-    try {
-      var response = await http.get(
-        Uri.parse('https://localhost:7173/api/User_QrCode'),
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": 'Bearer $token'
-        },
-      );
+  try {
+    var userQrResponse = await http.get(
+      Uri.parse('https://localhost:7173/api/User_QrCode'),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": 'Bearer $token'
+      },
+    );
 
-      if (response.statusCode == 200) {
-        List<dynamic> qrDataList = jsonDecode(response.body);
+    if (userQrResponse.statusCode == 200) {
+      List<dynamic> userQrData = jsonDecode(userQrResponse.body);
 
+      // Filter QR codes for logged-in user, ensuring both values are strings
+      List<int> userQrIds = userQrData
+          .where((qr) => qr["user_id"].toString() == userId) // Compare both as strings
+          .map<int>((qr) => qr["qr_id"])
+          .toList();
+
+      if (userQrIds.isEmpty) {
         setState(() {
-          userQrCodes =
-              qrDataList.map((qr) => qr["qrCode"].toString()).toList();
+          errorMessage = "No QR codes found for this user.";
+          userQrCodes = [];
         });
-      } else {
-        setState(() {
-          errorMessage =
-              "Error: ${response.body} (Status: ${response.statusCode})";
-        });
+        return;
       }
-    } catch (e) {
-      setState(() {
-        errorMessage = "Failed to fetch user's QR codes: $e";
-      });
-    }
-  }
 
-  // Fetch all available QR codes
-  Future<void> _fetchAllQrCodes() async {
-    try {
-      var response = await http.get(
+      // Fetch full QR details from /api/QrCodes
+      var allQrResponse = await http.get(
         Uri.parse('https://localhost:7173/api/QrCodes'),
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: {"Content-Type": "application/json"},
       );
 
-      if (response.statusCode == 200) {
-        List<dynamic> qrDataList = jsonDecode(response.body);
+      if (allQrResponse.statusCode == 200) {
+        List<dynamic> allQrData = jsonDecode(allQrResponse.body);
 
+        // Match and collect user QR codes
         setState(() {
-          allQrCodes = qrDataList.map((qr) => qr["qrCode"].toString()).toList();
+          userQrCodes = allQrData
+              .where((qr) => userQrIds.contains(qr["id"]))
+              .map((qr) => {
+                    "text": qr["text"].toString(),
+                    "title": qr["title"]?.toString() ?? "Untitled QR" // Ensure title is a string
+                  })
+              .toList();
         });
       } else {
         setState(() {
-          errorMessage =
-              "Error: ${response.body} (Status: ${response.statusCode})";
+          errorMessage = "Failed to fetch QR code details.";
         });
       }
-    } catch (e) {
+    } else {
       setState(() {
-        errorMessage = "Failed to fetch all QR codes: $e";
+        errorMessage = "Error fetching user QR codes: ${userQrResponse.body}";
       });
     }
+  } catch (e) {
+    setState(() {
+      errorMessage = "Exception: $e";
+    });
   }
-
-  // Fetch both user's QR codes and all available QR codes
-  Future<void> _fetchQrCodes() async {
-    await _fetchUserQrCodes();
-    await _fetchAllQrCodes();
-  }
+}
 
   @override
   Widget build(BuildContext context) {
-    List<String> displayedQrCodes = [...userQrCodes, ...allQrCodes];
-
     return Scaffold(
-      appBar: AppBar(title: Text("Dashboard")),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
-            childAspectRatio: 1,
-          ),
-          itemCount: displayedQrCodes.length + 1,
-          itemBuilder: (context, index) {
-            if (index < displayedQrCodes.length) {
-              return Column(
-                children: [
-                  Container(
-                    height: 100,
-                    width: 100,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    padding: EdgeInsets.all(8),
-                    child: Image.network(displayedQrCodes[index],
-                        fit: BoxFit.cover),
-                  ),
-                  SizedBox(height: 4),
-                  Text("Title", style: TextStyle(fontSize: 14)),
-                ],
-              );
-            } else {
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => CreateQr()),
-                  );
-                },
-                child: Column(
-                  children: [
-                    Container(
-                      height: 100,
-                      width: 100,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Center(
-                        child: Icon(Icons.add, size: 40, color: Colors.black),
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                    Text("Add QR-code", style: TextStyle(fontSize: 14)),
-                  ],
+      appBar: const Header(),
+      body: SafeArea(
+        child: Column(
+          children: [
+            if (errorMessage != null)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  errorMessage!,
+                  style: const TextStyle(color: Colors.red, fontSize: 16),
+                  textAlign: TextAlign.center,
                 ),
-              );
-            }
-          },
+              ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: 0.7,
+                  ),
+                  itemCount: userQrCodes.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index < userQrCodes.length) {
+                      return Column(
+                        children: [
+                          Container(
+                            height: 110,
+                            width: 110,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: const EdgeInsets.all(12),
+                            child: QrImageView(
+                              data: userQrCodes[index]["text"] ?? "",
+                              version: QrVersions.auto,
+                              size: 140,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            userQrCodes[index]["title"] ?? "Untitled QR",
+                            style: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      );
+                    } else {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CreateQr()),
+                          );
+                        },
+                        child: Column(
+                          children: [
+                            Container(
+                              height: 110,
+                              width: 110,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Center(
+                                child: Icon(Icons.add,
+                                    size: 50, color: Colors.black),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              "Add QR-code",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ),
+            ),
+          ],
         ),
       ),
+      bottomNavigationBar: const Footer(),
     );
   }
 }

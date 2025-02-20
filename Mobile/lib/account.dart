@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:Mobile/templates/footer.dart';
 import 'package:Mobile/templates/header.dart';
 import 'package:flutter/material.dart';
