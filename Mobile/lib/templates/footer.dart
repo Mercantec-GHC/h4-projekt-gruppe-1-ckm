@@ -27,6 +27,7 @@ class Footer extends StatelessWidget {
                 ),
                 icon: const Icon(Icons.person_2_rounded),
               ),
+              const SizedBox(height: 2),
               const Text(
                 'Profile',
                 style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
@@ -46,6 +47,7 @@ class Footer extends StatelessWidget {
                 ),
                 icon: const Icon(Icons.cottage),
               ),
+              const SizedBox(height: 2),
               const Text(
                 'Home',
                 style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
@@ -65,6 +67,7 @@ class Footer extends StatelessWidget {
                 ),
                 icon: const Icon(Icons.camera_alt),
               ),
+              const SizedBox(height: 2),
               const Text(
                 'Camera',
                 style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
