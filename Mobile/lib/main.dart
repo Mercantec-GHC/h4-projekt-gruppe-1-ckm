@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const Login(),
         '/dashboard': (context) => const Dashboard(),
         '/edit': (context) => const EditQr(),
-        '/show': (context) => const ShowQr(),
+        // '/show': (context) => const ShowQr(),
       },
     );
   }
