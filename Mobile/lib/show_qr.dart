@@ -8,14 +8,13 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class ShowQr extends StatefulWidget {
-  const ShowQr({super.key});
-
+  final String qrId;
+  const ShowQr({super.key, required this.qrId});  
   @override
   _ShowQrState createState() => _ShowQrState();
 }
 
 class _ShowQrState extends State<ShowQr> {
-  // Error message to display in case of an error
   String? errorMessage;
   String result = '';
   String titleHint = "Fetching title...";
