@@ -1,38 +1,51 @@
 import 'package:Mobile/auth_service.dart';
 import 'package:Mobile/dashboard.dart';
+import 'package:Mobile/editQr.dart';
 import 'package:Mobile/statistics.dart';
 import 'package:Mobile/templates/footer.dart';
 import 'package:Mobile/templates/header.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
+import 'package:qr_flutter/qr_flutter.dart';
+ 
 class ShowQr extends StatefulWidget {
-  final String qrId;
-  const ShowQr({super.key, required this.qrId});  
+  final String qrCodeId;
+ 
+  const ShowQr({super.key, required this.qrCodeId});
+ 
   @override
   _ShowQrState createState() => _ShowQrState();
 }
-
+ 
 class _ShowQrState extends State<ShowQr> {
+  // Error message to display in case of an error
   String? errorMessage;
   String result = '';
   String titleHint = "Fetching title...";
-
+  String textHint = "Fetching text...";
+   @override
+  void initState() {
+    super.initState();
+    _getQr();
+  }
   Future<void> _getQr() async {
     String? token = await AuthService().getToken();
     if (token == null) return;
-
-    var response = await http
-        .get(Uri.parse('https://localhost:7173/api/QrCodes/{id}'), headers: {
-      "Content-Type": "application/json",
-      "Authorization": 'Bearer $token'
-    });
+ 
+    var response = await http.get(
+        Uri.parse('https://localhost:7173/api/QrCodes/${widget.qrCodeId}'),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": 'Bearer $token'
+        });
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
-
+      print(response);
+      print(widget.qrCodeId);
       setState(() {
-        titleHint = data['title'] ?? 'Enter Title';
+        textHint = data['text'] ?? '';
+        titleHint = data['title'] ?? '';
       });
     } else {
       setState(() {
@@ -40,13 +53,13 @@ class _ShowQrState extends State<ShowQr> {
       });
     }
   }
-
+ 
   Future<void> _deleteQr() async {
     String? token = await AuthService().getToken();
     if (token == null) return;
     try {
       var response = await http.delete(
-        Uri.parse('https://localhost:7173/api/QrCodes/{id}'),
+        Uri.parse('https://localhost:7173/api/QrCodes/${widget.qrCodeId}'),
         headers: {
           "Content-Type": "application/json",
           "Authorization": 'Bearer $token'
@@ -61,7 +74,7 @@ class _ShowQrState extends State<ShowQr> {
         });
       } else {
         errorMessage =
-            "Update failed: ${response.body}: ${response.statusCode}";
+            "Delete failed: ${response.body}: ${response.statusCode}";
       }
     } catch (e) {
       setState(() {
@@ -69,7 +82,8 @@ class _ShowQrState extends State<ShowQr> {
       });
     }
   }
-
+ 
+  // Confirm deletion via dialog
   Future<void> _comfirmDelete() async {
     return showDialog<void>(
       context: context,
@@ -80,7 +94,7 @@ class _ShowQrState extends State<ShowQr> {
           content: const SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Are you sure?'),
+                Text('Are you sure you want to delete this QR code?'),
               ],
             ),
           ),
@@ -102,7 +116,7 @@ class _ShowQrState extends State<ShowQr> {
       },
     );
   }
-
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,6 +126,7 @@ class _ShowQrState extends State<ShowQr> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
+              // Information btn
               Container(
                 child: IconButton(
                   icon: const Icon(Icons.info_outline),
@@ -124,6 +139,7 @@ class _ShowQrState extends State<ShowQr> {
                   },
                 ),
               ),
+              // Delete btn
               Container(
                 child: IconButton(
                   icon: const Icon(Icons.delete),
@@ -132,41 +148,57 @@ class _ShowQrState extends State<ShowQr> {
                   },
                 ),
               ),
+              // Edit btn
               Container(
                 child: IconButton(
                   icon: const Icon(Icons.edit),
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => const Statistics()),
+                      MaterialPageRoute(builder: (context) => const EditQr()),
                     );
                   },
                 ),
               ),
             ],
           ),
-          Image.asset('assets/qr.png', width: 400),
-          Text(
-            titleHint,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
-          ),
-          SizedBox(
-            height: 50,
-            width: 180,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xff6F58C9),
-                foregroundColor: Colors.white,
+          // Show QR
+          Column(
+            children: [
+              // Generated QR code
+              textHint.isNotEmpty
+                  ? QrImageView(
+                      data: textHint,
+                      version: QrVersions.auto,
+                      size: 300.0,
+                    )
+                  : const Center(
+                      child:
+                          // Use Center widget for CircularProgressIndicator
+                          CircularProgressIndicator()),
+              SizedBox(height: 20),
+              Text(
+                titleHint,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
               ),
-              child: const Text(
-                'Show content',
-                style: TextStyle(fontSize: 20),
+              SizedBox(
+                height: 50,
+                width: 180,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xff6F58C9),
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text(
+                    'Show content',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  onPressed: () {
+                    // Navigator.pushNamed(context, '/');
+                  },
+                ),
               ),
-              onPressed: () {
-                // Navigator.pushNamed(context, '/');
-              },
-            ),
+            ],
           ),
         ],
       ),
@@ -174,3 +206,5 @@ class _ShowQrState extends State<ShowQr> {
     );
   }
 }
+ 
+ 

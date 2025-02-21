@@ -135,7 +135,7 @@ class DashboardState extends State<Dashboard> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => ShowQr(
-                                qrId: userQrCodes[index]["qr_id"]!,
+                                qrCodeId: userQrCodes[index]["qr_id"]!,
                               ),
                             ),
                           );
@@ -175,7 +175,7 @@ class DashboardState extends State<Dashboard> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => ShowQr(
-                                qrId: userQrCodes[index]
+                                qrCodeId: userQrCodes[index]
                                     ["qr_id"]!, // Pass qr_id here
                               ),
                             ),
