@@ -41,7 +41,7 @@ class _EditQrState extends State<EditQr> {
         'text': linkController.text.trim(),
       };
       var response = await http.put(
-          Uri.parse('https://localhost:7173/api/QrCodes/{id}'),
+          Uri.parse('https://localhost:7173/api/QrCodes/${widget.qrCodeId}'),
           headers: {
             "Content-Type": "application/json",
             "Authorization": 'Bearer $token'
