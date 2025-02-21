@@ -8,31 +8,32 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:qr_flutter/qr_flutter.dart';
- 
+
 class ShowQr extends StatefulWidget {
   final String qrCodeId;
- 
+
   const ShowQr({super.key, required this.qrCodeId});
- 
+
   @override
   _ShowQrState createState() => _ShowQrState();
 }
- 
+
 class _ShowQrState extends State<ShowQr> {
   // Error message to display in case of an error
   String? errorMessage;
   String result = '';
   String titleHint = "Fetching title...";
   String textHint = "Fetching text...";
-   @override
+  @override
   void initState() {
     super.initState();
     _getQr();
   }
+
   Future<void> _getQr() async {
     String? token = await AuthService().getToken();
     if (token == null) return;
- 
+
     var response = await http.get(
         Uri.parse('https://localhost:7173/api/QrCodes/${widget.qrCodeId}'),
         headers: {
@@ -53,7 +54,7 @@ class _ShowQrState extends State<ShowQr> {
       });
     }
   }
- 
+
   Future<void> _deleteQr() async {
     String? token = await AuthService().getToken();
     if (token == null) return;
@@ -82,7 +83,7 @@ class _ShowQrState extends State<ShowQr> {
       });
     }
   }
- 
+
   // Confirm deletion via dialog
   Future<void> _comfirmDelete() async {
     return showDialog<void>(
@@ -116,7 +117,7 @@ class _ShowQrState extends State<ShowQr> {
       },
     );
   }
- 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -155,7 +156,10 @@ class _ShowQrState extends State<ShowQr> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const EditQr()),
+                      MaterialPageRoute(
+                          builder: (context) => EditQr(
+                                qrCodeId: widget.qrCodeId,
+                              )),
                     );
                   },
                 ),
@@ -206,5 +210,3 @@ class _ShowQrState extends State<ShowQr> {
     );
   }
 }
- 
- 
