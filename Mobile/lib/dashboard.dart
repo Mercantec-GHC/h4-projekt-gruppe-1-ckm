@@ -101,120 +101,118 @@ class DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const Header(),
-      body: SafeArea(
-        child: Column(
-          children: [
-            if (errorMessage != null)
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  errorMessage!,
-                  style: const TextStyle(color: Colors.red, fontSize: 16),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio: 0.7,
-                  ),
-                  itemCount: userQrCodes.length + 1,
-                  itemBuilder: (context, index) {
-                    if (index < userQrCodes.length) {
-                      return GestureDetector(
-                        onTap: () {
-                          // Pass the QR ID to the ShowQr screen
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ShowQr(
-                                qrCodeId: userQrCodes[index]["qr_id"]!,
-                              ),
-                            ),
-                          );
-                        },
-                        child: Column(
-                          children: [
-                            Container(
-                              height: 110,
-                              width: 110,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[300],
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              padding: const EdgeInsets.all(12),
-                              child: QrImageView(
-                                data: userQrCodes[index]["text"] ?? "",
-                                version: QrVersions.auto,
-                                size: 140,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              userQrCodes[index]["title"] ?? "Untitled QR",
-                              style: const TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      );
-                    } else {
-                      return GestureDetector(
-                        onTap: () {
-                          // Pass the QR ID to the ShowQr screen
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ShowQr(
-                                qrCodeId: userQrCodes[index]
-                                    ["qr_id"]!, // Pass qr_id here
-                              ),
-                            ),
-                          );
-                        },
-                        child: Column(
-                          children: [
-                            Container(
-                              height: 110,
-                              width: 110,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[300],
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Center(
-                                child: Icon(Icons.add,
-                                    size: 50, color: Colors.black),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            const Text(
-                              "Add QR-code",
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                  },
-                ),
-              ),
+  return Scaffold(
+  appBar: const Header(),
+  body: SafeArea(
+    child: Column(
+      children: [
+        if (errorMessage != null)
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              errorMessage!,
+              style: const TextStyle(color: Colors.red, fontSize: 16),
+              textAlign: TextAlign.center,
             ),
-          ],
+          ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 0.7,
+              ),
+              itemCount: userQrCodes.length + 1,
+              itemBuilder: (context, index) {
+                if (index < userQrCodes.length) {
+                  return GestureDetector(
+                    onTap: () {
+                      // Navigate to ShowQr screen with the QR ID
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ShowQr(
+                            qrCodeId: userQrCodes[index]["qr_id"]!,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Column(
+                      children: [
+                        Container(
+                          height: 110,
+                          width: 110,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.all(12),
+                          child: QrImageView(
+                            data: userQrCodes[index]["text"] ?? "",
+                            version: QrVersions.auto,
+                            size: 140,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          userQrCodes[index]["title"] ?? "Untitled QR",
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  return GestureDetector(
+                    onTap: () {
+                      // Navigate to the CreateQrPage when "Add QR-code" is tapped
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CreateQr(), // Navigate to CreateQrPage
+                        ),
+                      );
+                    },
+                    child: Column(
+                      children: [
+                        Container(
+                          height: 110,
+                          width: 110,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Center(
+                            child: Icon(Icons.add,
+                                size: 50, color: Colors.black),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          "Add QR-code",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              },
+            ),
+          ),
         ),
-      ),
-      bottomNavigationBar: const Footer(),
-    );
+      ],
+    ),
+  ),
+  bottomNavigationBar: const Footer(),
+);
+
   }
 }
