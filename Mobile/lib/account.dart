@@ -168,7 +168,7 @@ void saveChanges() async {
                           fontWeight: FontWeight.bold, color: Colors.purple)),
                   const Text(
                     "Enter your current password or a new one.",
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                    style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 0, 0)),
                   ),
                   TextField(
                     controller: passwordController,
