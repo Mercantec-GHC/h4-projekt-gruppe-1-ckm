@@ -33,7 +33,7 @@ class _AccountState extends State<Account> {
   }
 
   Future<void> _loadUserData() async {
-    String? token = await AuthService().getToken(); // Retrieve token
+   String? token = await AuthService().getToken(); // Retrieve token
 
     if (token != null) {
       print("JWT Token: $token"); // Print full token for debugging
@@ -45,7 +45,7 @@ class _AccountState extends State<Account> {
         setState(() {
           emailController.text = decodedToken['email'] ?? 'No email in token';
           usernameController.text =
-              decodedToken['name'] ?? 'No username in token'; // FIXED
+              decodedToken['name'] ?? 'No username in token'; 
         });
       } else {
         print("Token is expired");
@@ -55,48 +55,69 @@ class _AccountState extends State<Account> {
     }
   }
 
-  void saveChanges() async {
-    String? token = await AuthService().getToken();
-    if (token == null) return;
+void logout() async {
+  await AuthService().deleteToken();
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(builder: (context) => const Login()), // Redirect to login
+  );
+}
 
-    Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-    String userId = decodedToken["id"]; // Extract user ID from token
+void saveChanges() async {
+  print("saveChanges() started...");
 
-    Map<String, String> updatedData = {
-      "email": emailController.text,
-      "username": usernameController.text,
-      "password": passwordController.text,
-    };
+  // Step 1: Retrieve the token
+  String? token = await AuthService().getToken();
+  if (token == null) {
+    print("ERROR: Token is null!");
+    return;
+  }
+  print("Token retrieved successfully.");
 
+  // Step 2: Decode the token to get user ID
+  Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+  print("Decoded token: $decodedToken");
+
+  String? userId = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+  if (userId == null) {
+    print("ERROR: User ID is null!");
+    return;
+  }
+  print("User ID extracted: $userId");
+
+  // Step 3: Prepare request data
+  Map<String, String> updatedData = {
+    "email": emailController.text,
+    "username": usernameController.text,
+    "password": passwordController.text,
+  };
+  print("Updated data: $updatedData");
+
+  // Step 4: Send the API request
+  String apiUrl = "https://localhost:7173/api/Users/$userId";
+  print("Sending request to: $apiUrl");
+
+  try {
     var response = await http.put(
-      Uri.parse("https://localhost:7173/api/Users/$userId"),
+      Uri.parse(apiUrl),
       headers: {
         "Content-Type": "application/json",
-        "Authorization": 'Bearer $token',
+        "Authorization": "Bearer $token",
       },
       body: jsonEncode(updatedData),
     );
 
-    if (response.statusCode == 200 || response.statusCode == 204) {
-      print("Updated successfully!");
-      setState(() {
-        successMessage = "Updated successfully!";
-        isChanged = false; // Disable Save Changes button after saving
-      });
-    } else {
-      errorMessage = "Update failed: ${response.body}";
-      print("Update failed: ${response.body} ${response.statusCode}");
-    }
-  }
+    print("Response Status Code: ${response.statusCode}");
+    print("Response Body: ${response.body}");
 
-  void logout() async {
-    await AuthService().deleteToken(); // Clear JWT token
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-          builder: (context) => const Login()), // Navigate to login
-    );
+    if (response.statusCode == 200 || response.statusCode == 204) {
+      logout();
+    }
+  } catch (e) {
+    print("ERROR: Exception occurred: $e");
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
