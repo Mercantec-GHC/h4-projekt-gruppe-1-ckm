@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
+import 'dart:io';
 
 class ShowQr extends StatefulWidget {
   final String qrCodeId;
@@ -24,6 +26,7 @@ class _ShowQrState extends State<ShowQr> {
   String result = '';
   String titleHint = "Fetching title...";
   String textHint = "Fetching text...";
+
   @override
   void initState() {
     super.initState();
@@ -42,8 +45,6 @@ class _ShowQrState extends State<ShowQr> {
         });
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
-      print(response);
-      print(widget.qrCodeId);
       setState(() {
         textHint = data['text'] ?? '';
         titleHint = data['title'] ?? '';
@@ -53,6 +54,32 @@ class _ShowQrState extends State<ShowQr> {
         errorMessage = "Get failed: ${response.body}: ${response.statusCode}";
       });
     }
+  }
+
+  // Preview of content
+  void _showContentDialog(String content) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("QR Code Content"),
+          content: SingleChildScrollView(
+            child: SelectableText(
+              content,
+              style: const TextStyle(fontSize: 18, color: Colors.black),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _deleteQr() async {
@@ -198,7 +225,7 @@ class _ShowQrState extends State<ShowQr> {
                     style: TextStyle(fontSize: 20),
                   ),
                   onPressed: () {
-                    // Navigator.pushNamed(context, '/');
+                    _showContentDialog(textHint);
                   },
                 ),
               ),
