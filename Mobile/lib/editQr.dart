@@ -6,7 +6,9 @@ import 'package:http/http.dart' as http;
 import 'auth_service.dart';
 
 class EditQr extends StatefulWidget {
-  const EditQr({super.key});
+  String qrCodeId;
+
+  EditQr({super.key, required this.qrCodeId});
 
   @override
   _EditQrState createState() => _EditQrState();
@@ -39,10 +41,10 @@ class _EditQrState extends State<EditQr> {
         'text': linkController.text.trim(),
       };
       var response = await http.put(
-          Uri.parse('https://localhost:7173/api/QrCodes/{id}'),
+          Uri.parse('https://localhost:7173/api/QrCodes/${widget.qrCodeId}'),
           headers: {
             "Content-Type": "application/json",
-            "Authorization": 'Barrer $token'
+            "Authorization": 'Bearer $token'
           },
           body: jsonEncode(updatedQr));
       if (response.statusCode == 200 || response.statusCode == 204) {
@@ -60,15 +62,22 @@ class _EditQrState extends State<EditQr> {
     }
   }
 
+  @override
+  void initState() {
+    super.initState();
+    _getQr();
+  }
+
   Future<void> _getQr() async {
     String? token = await AuthService().getToken();
     if (token == null) return;
 
-    var response = await http
-        .get(Uri.parse('https://localhost:7173/api/QrCodes/{id}'), headers: {
-      "Content-Type": "application/json",
-      "Authorization": 'Barrer $token'
-    });
+    var response = await http.get(
+        Uri.parse('https://localhost:7173/api/QrCodes/${widget.qrCodeId}'),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": 'Bearer $token'
+        });
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
 

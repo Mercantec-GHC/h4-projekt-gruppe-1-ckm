@@ -1,9 +1,7 @@
-import 'package:Mobile/editQr.dart';
 import 'package:Mobile/templates/footerOnlyHome.dart';
 import 'package:flutter/material.dart';
 import 'package:Mobile/signup.dart';
 import 'package:Mobile/login.dart';
-import 'package:Mobile/dashboard.dart';
 
 void main() => runApp(const MyApp());
 
@@ -18,8 +16,6 @@ class MyApp extends StatelessWidget {
         '/': (context) => const HomeScreen(),
         '/signup': (context) => const Signup(),
         '/login': (context) => const Login(),
-        '/dashboard': (context) => const Dashboard(),
-        '/edit': (context) => const EditQr(),
       },
     );
   }
@@ -74,41 +70,6 @@ class HomeScreen extends StatelessWidget {
               ),
               onPressed: () {
                 Navigator.pushNamed(context, '/signup');
-              },
-            ),
-          ),
-          const SizedBox(height: 30),
-          SizedBox(
-            height: 50,
-            width: 140,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xff6F58C9),
-                foregroundColor: Colors.white,
-              ),
-              child: const Text(
-                'Dashboard',
-                style: TextStyle(fontSize: 20),
-              ),
-              onPressed: () {
-                Navigator.pushNamed(context, '/dashboard');
-              },
-            ),
-          ),
-          SizedBox(
-            height: 50,
-            width: 140,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xff6F58C9),
-                foregroundColor: Colors.white,
-              ),
-              child: const Text(
-                'Edit',
-                style: TextStyle(fontSize: 20),
-              ),
-              onPressed: () {
-                Navigator.pushNamed(context, '/edit');
               },
             ),
           ),
