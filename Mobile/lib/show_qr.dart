@@ -8,8 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
-import 'dart:io';
 
 class ShowQr extends StatefulWidget {
   final String qrCodeId;
