@@ -93,6 +93,24 @@ namespace API.Controllers
             return NoContent();
         }
 
+        // PUT: used to increment the scan count of a QR code
+        [HttpPut("{id}")]
+        public async Task<IActionResult> IncrementQrCode(int id)
+        {
+            var qrCode = await _context.QrCodes.FindAsync(id);
+            if (qrCode == null)
+            {
+                return NotFound("QR Code not found");
+            }
+
+            // Increment scan count
+            qrCode.Scannings++;
+            await _context.SaveChangesAsync();
+
+            // Return the updated scan count and QR code ID
+            return Ok(new { qrCode.Id, qrCode.Scannings });
+        }
+
         // POST: api/QrCodes
         [Authorize]
         [HttpPost]

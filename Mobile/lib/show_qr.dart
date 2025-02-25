@@ -80,6 +80,25 @@ class _ShowQrState extends State<ShowQr> {
     );
   }
 
+  Future<void> incrementScanCount(int qrCodeId) async {
+    final url = Uri.parse('https://localhost:7173/api/QrCode/$qrCodeId');
+
+    final response = await http.put(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      // Successfully incremented scan count
+      final responseData = json.decode(response.body);
+      print(
+          "QR Code ID: ${responseData['Id']}, Scan Count: ${responseData['Scannings']}");
+    } else {
+      // Handle error
+      print("Failed to update scan count");
+    }
+  }
+
   Future<void> _deleteQr() async {
     String? token = await AuthService().getToken();
     if (token == null) return;
