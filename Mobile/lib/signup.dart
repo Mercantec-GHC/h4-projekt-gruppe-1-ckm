@@ -48,7 +48,7 @@ class _SignupState extends State<Signup> {
         });
       } else {
         setState(() {
-          result = 'signup Failed';
+          result = 'signup Failed: ${response.body}';
         });
       }
     } catch (e) {
