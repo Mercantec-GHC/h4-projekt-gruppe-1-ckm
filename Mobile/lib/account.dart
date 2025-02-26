@@ -33,7 +33,7 @@ class _AccountState extends State<Account> {
   }
 
   Future<void> _loadUserData() async {
-   String? token = await AuthService().getToken(); // Retrieve token
+    String? token = await AuthService().getToken(); // Retrieve token
 
     if (token != null) {
       print("JWT Token: $token"); // Print full token for debugging
@@ -45,7 +45,7 @@ class _AccountState extends State<Account> {
         setState(() {
           emailController.text = decodedToken['email'] ?? 'No email in token';
           usernameController.text =
-              decodedToken['name'] ?? 'No username in token'; 
+              decodedToken['name'] ?? 'No username in token';
         });
       } else {
         print("Token is expired");
@@ -55,69 +55,70 @@ class _AccountState extends State<Account> {
     }
   }
 
-void logout() async {
-  await AuthService().deleteToken();
-  Navigator.pushReplacement(
-    context,
-    MaterialPageRoute(builder: (context) => const Login()), // Redirect to login
-  );
-}
-
-void saveChanges() async {
-  print("saveChanges() started...");
-
-  // Step 1: Retrieve the token
-  String? token = await AuthService().getToken();
-  if (token == null) {
-    print("ERROR: Token is null!");
-    return;
-  }
-  print("Token retrieved successfully.");
-
-  // Step 2: Decode the token to get user ID
-  Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-  print("Decoded token: $decodedToken");
-
-  String? userId = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
-  if (userId == null) {
-    print("ERROR: User ID is null!");
-    return;
-  }
-  print("User ID extracted: $userId");
-
-  // Step 3: Prepare request data
-  Map<String, String> updatedData = {
-    "email": emailController.text,
-    "username": usernameController.text,
-    "password": passwordController.text,
-  };
-  print("Updated data: $updatedData");
-
-  // Step 4: Send the API request
-  String apiUrl = "https://localhost:7173/api/Users/$userId";
-  print("Sending request to: $apiUrl");
-
-  try {
-    var response = await http.put(
-      Uri.parse(apiUrl),
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer $token",
-      },
-      body: jsonEncode(updatedData),
+  void logout() async {
+    await AuthService().deleteToken();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+          builder: (context) => const Login()), // Redirect to login
     );
-
-    print("Response Status Code: ${response.statusCode}");
-    print("Response Body: ${response.body}");
-
-    if (response.statusCode == 200 || response.statusCode == 204) {
-      logout();
-    }
-  } catch (e) {
-    print("ERROR: Exception occurred: $e");
   }
-}
 
+  void saveChanges() async {
+    print("saveChanges() started...");
+
+    // Step 1: Retrieve the token
+    String? token = await AuthService().getToken();
+    if (token == null) {
+      print("ERROR: Token is null!");
+      return;
+    }
+    print("Token retrieved successfully.");
+
+    // Step 2: Decode the token to get user ID
+    Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+    print("Decoded token: $decodedToken");
+
+    String? userId = decodedToken[
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+    if (userId == null) {
+      print("ERROR: User ID is null!");
+      return;
+    }
+    print("User ID extracted: $userId");
+
+    // Step 3: Prepare request data
+    Map<String, String> updatedData = {
+      "email": emailController.text,
+      "username": usernameController.text,
+      "password": passwordController.text,
+    };
+    print("Updated data: $updatedData");
+
+    // Step 4: Send the API request
+    String apiUrl = "https://localhost:7173/api/Users/$userId";
+    print("Sending request to: $apiUrl");
+
+    try {
+      var response = await http.put(
+        Uri.parse(apiUrl),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+        body: jsonEncode(updatedData),
+      );
+
+      print("Response Status Code: ${response.statusCode}");
+      print("Response Body: ${response.body}");
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        logout();
+      }
+    } catch (e) {
+      print("ERROR: Exception occurred: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,6 +126,7 @@ void saveChanges() async {
       appBar: const Header(),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
+        
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -168,7 +170,8 @@ void saveChanges() async {
                           fontWeight: FontWeight.bold, color: Colors.purple)),
                   const Text(
                     "Enter your current password or a new one.",
-                    style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 0, 0)),
+                    style: TextStyle(
+                        fontSize: 12, color: Color.fromARGB(255, 255, 0, 0)),
                   ),
                   TextField(
                     controller: passwordController,
@@ -203,6 +206,7 @@ void saveChanges() async {
               ),
             ),
             const SizedBox(height: 10),
+            
             if (successMessage != null)
               Text(successMessage!,
                   style: const TextStyle(
@@ -211,7 +215,23 @@ void saveChanges() async {
               Text(errorMessage!,
                   style: const TextStyle(
                       color: Colors.red, fontWeight: FontWeight.bold)),
+            
             const SizedBox(height: 20),
+            
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/brickBreaker');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.purple,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+              child: const Center(child: Text("Play")),
+            ),
+            
+            const SizedBox(height: 20),
+            
             ElevatedButton(
               onPressed: logout, // Call logout function
               style: ElevatedButton.styleFrom(

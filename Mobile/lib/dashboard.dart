@@ -19,6 +19,7 @@ class Dashboard extends StatefulWidget {
 class DashboardState extends State<Dashboard> {
   String? errorMessage;
   List<Map<String, String>> userQrCodes = [];
+  List<Map<String, String>> searchResults = [];
 
   @override
   void initState() {
@@ -108,94 +109,154 @@ class DashboardState extends State<Dashboard> {
                 mainAxisSpacing: 12,
                 childAspectRatio: 0.7,
               ),
-              itemCount: userQrCodes.length + 1,
-              itemBuilder: (context, index) {
-                if (index < userQrCodes.length) {
-                  return GestureDetector(
-                    onTap: () {
-                      // Navigate to ShowQr screen with the QR ID
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ShowQr(
-                            qrCodeId: userQrCodes[index]["qr_id"]!,
-                          ),
-                        ),
-                      );
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          height: 110,
-                          width: 110,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: const EdgeInsets.all(12),
-                          child: QrImageView(
-                            data: userQrCodes[index]["text"] ?? "",
-                            version: QrVersions.auto,
-                            size: 140,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          userQrCodes[index]["title"] ?? "Untitled QR",
-                          style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SearchAnchor(
+                builder: (BuildContext context, SearchController controller) {
+                  return SearchBar(
+                    controller: controller,
+                    padding: const WidgetStatePropertyAll<EdgeInsets>(
+                      EdgeInsets.symmetric(horizontal: 16.0),
                     ),
-                  );
-                } else {
-                  return GestureDetector(
                     onTap: () {
-                      // Navigate to the CreateQrPage when "Add QR-code" is tapped
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CreateQr(), // Navigate to CreateQrPage
-                        ),
-                      );
+                      controller.openView();
                     },
-                    child: Column(
-                      children: [
-                        Container(
-                          height: 110,
-                          width: 110,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Center(
-                            child: Icon(Icons.add,
-                                size: 50, color: Colors.black),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          "Add QR-code",
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
+                    onChanged: (_) {
+                      controller.openView();
+                    },
+                    leading: const Icon(Icons.search),
                   );
-                }
-              },
-            ),
-          ),
-        ),
-      ],
-    ),
-  ),
-  bottomNavigationBar: const Footer(),
-);
+                },
+                suggestionsBuilder:
+                    (BuildContext context, SearchController controller) {
+                  final query = controller.text.toLowerCase();
+                  if (query.isEmpty) {
+                    return [];
+                  }
+                  final suggestions = userQrCodes
+                      .where((qr) =>
+                          qr["title"]?.toLowerCase().contains(query) ?? false)
+                      .toList();
 
+                  return List<Widget>.generate(suggestions.length, (int index) {
+                    final String item =
+                        suggestions[index]["title"] ?? "Untitled QR";
+                    return ListTile(
+                      title: Text(item),
+                      onTap: () {
+                        controller.closeView(item);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ShowQr(
+                              qrCodeId: suggestions[index]["qr_id"]!,
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  });
+                },
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: 0.7,
+                  ),
+                  itemCount: userQrCodes.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index < userQrCodes.length) {
+                      return GestureDetector(
+                        onTap: () {
+                          // Navigate to ShowQr screen with the QR ID
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ShowQr(
+                                qrCodeId: userQrCodes[index]["qr_id"]!,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Column(
+                          children: [
+                            Container(
+                              height: 110,
+                              width: 110,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              padding: const EdgeInsets.all(12),
+                              child: QrImageView(
+                                data: userQrCodes[index]["text"] ?? "",
+                                version: QrVersions.auto,
+                                size: 140,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              userQrCodes[index]["title"] ?? "Untitled QR",
+                              style: const TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      );
+                    } else {
+                      return GestureDetector(
+                        onTap: () {
+                          // Navigate to the CreateQrPage when "Add QR-code" is tapped
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  CreateQr(), // Navigate to CreateQrPage
+                            ),
+                          );
+                        },
+                        child: Column(
+                          children: [
+                            Container(
+                              height: 110,
+                              width: 110,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Center(
+                                child: Icon(Icons.add,
+                                    size: 50, color: Colors.black),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              "Add QR-code",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: const Footer(),
+    );
   }
 }
