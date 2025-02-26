@@ -52,15 +52,7 @@ class DashboardState extends State<Dashboard> {
                 qr["user_id"].toString() == userId) // Compare both as strings
             .map<int>((qr) => qr["qr_id"])
             .toList();
-
-        if (userQrIds.isEmpty) {
-          setState(() {
-            errorMessage = "No QR codes found for this user.";
-            userQrCodes = [];
-          });
-          return;
-        }
-
+            
         // Fetch full QR details from /api/QrCodes
         var allQrResponse = await http.get(
           Uri.parse('https://localhost:7173/api/QrCodes'),
@@ -106,15 +98,6 @@ class DashboardState extends State<Dashboard> {
   body: SafeArea(
     child: Column(
       children: [
-        if (errorMessage != null)
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              errorMessage!,
-              style: const TextStyle(color: Colors.red, fontSize: 16),
-              textAlign: TextAlign.center,
-            ),
-          ),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
