@@ -98,17 +98,7 @@ class DashboardState extends State<Dashboard> {
   appBar: const Header(),
   body: SafeArea(
     child: Column(
-      children: [
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 0.7,
-              ),
+      children: [    
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: SearchAnchor(
@@ -150,7 +140,7 @@ class DashboardState extends State<Dashboard> {
                           MaterialPageRoute(
                             builder: (context) => ShowQr(
                               qrCodeId: suggestions[index]["qr_id"]!,
-                            ),
+                               ),
                           ),
                         );
                       },
@@ -159,6 +149,7 @@ class DashboardState extends State<Dashboard> {
                 },
               ),
             ),
+            
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -253,10 +244,11 @@ class DashboardState extends State<Dashboard> {
                 ),
               ),
             ),
-          ],
-        ),
+    ],
+          ),
       ),
       bottomNavigationBar: const Footer(),
     );
   }
 }
+
