@@ -187,6 +187,7 @@ void saveChanges() async {
                         },
                       ),
                     ),
+                      onChanged: (_) => setState(() => isChanged = true),
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(

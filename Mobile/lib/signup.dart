@@ -44,12 +44,25 @@ class _SignupState extends State<Signup> {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         setState(() {
-          result = 'Success: ${response.body}';
+          result = 'Success!';
         });
       } else {
-        setState(() {
-          result = 'signup Failed: ${response.body}';
-        });
+        try {
+          final Map<String, dynamic> errorData = jsonDecode(response.body);
+          final Map<String, dynamic> errors = errorData['errors'];
+
+          String formattedErrors = errors.entries.map((entry) {
+            return '${entry.key}: ${entry.value}';
+          }).join('\n');
+
+          setState(() {
+            result = 'Signup Failed:\n$formattedErrors';
+          });
+        } catch (e) {
+          setState(() {
+            result = 'Signup Failed: ${response.body}';
+          });
+        }
       }
     } catch (e) {
       setState(() {
