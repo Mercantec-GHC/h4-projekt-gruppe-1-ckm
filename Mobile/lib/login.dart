@@ -50,7 +50,6 @@ class _LoginState extends State<Login> {
             result = 'Login Successful!';
           });
 
-          // 🚀 Redirect to Dashboard after successful login
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const Dashboard()),
