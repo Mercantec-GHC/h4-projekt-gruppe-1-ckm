@@ -52,10 +52,13 @@ class _EditQrState extends State<EditQr> {
         });
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
-      
+
       setState(() {
         titleHint = data['title'] ?? 'Enter Title';
         linkHint = data['text'] ?? 'Enter Link/Text';
+
+        titleController.text = data['title'] ?? '';
+        linkController.text = data['text'] ?? '';
       });
     } else {
       setState(() {
@@ -69,8 +72,12 @@ class _EditQrState extends State<EditQr> {
     if (token == null) return;
     try {
       Map<String, dynamic> updatedQr = {
-        'title': titleController.text.trim().isNotEmpty ? titleController.text.trim() : titleHint,
-        'text': linkController.text.trim().isNotEmpty ? linkController.text.trim() : linkHint,
+        'title': titleController.text.trim().isNotEmpty
+            ? titleController.text.trim()
+            : titleHint,
+        'text': linkController.text.trim().isNotEmpty
+            ? linkController.text.trim()
+            : linkHint,
       };
       var response = await http.put(
           Uri.parse('https://localhost:7173/api/QrCodes/${widget.qrCodeId}'),
@@ -80,10 +87,10 @@ class _EditQrState extends State<EditQr> {
           },
           body: jsonEncode(updatedQr));
       if (response.statusCode == 200 || response.statusCode == 204) {
-         Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const Dashboard()),
-          );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const Dashboard()),
+        );
       } else {
         errorMessage =
             "Update failed: ${response.body}: ${response.statusCode}";
@@ -136,7 +143,6 @@ class _EditQrState extends State<EditQr> {
                       prefixIcon: const Icon(Icons.title)),
                 ),
                 const SizedBox(height: 20),
-
                 // Link/Text input field
                 TextField(
                   controller: linkController,
