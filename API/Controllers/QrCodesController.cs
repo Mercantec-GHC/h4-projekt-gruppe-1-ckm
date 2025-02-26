@@ -39,8 +39,8 @@ namespace API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutQrCode(int id, EditQrCode qrCodeEdit)
         {
-            Regex validateTitle = new(@"^[a-zA-Z0-9]{1,30}$");  // Only letters and numbers (1-30 chars)
-            Regex validateText = new(@"(?:.*?\s)?(https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,10}(?:[-a-zA-Z0-9()@:%_+.~#?&//=]*)?)?(?:\s.*)?$"); // Standard link format
+            Regex validateTitle = new(@"^[a-zA-Z0-9ÆØÅæøå\s]{1,30}$");
+            Regex validateText = new(@"(?:.*?\s)?(https?:\/\/(?:www\.)?[-a-zA-Z0-9ÆØÅæøå@:%._+~#=]{1,256}\.[a-zA-Z0-9ÆØÅæøå()]{1,10}(?:[-a-zA-Z0-9ÆØÅæøå()@:%_+.~#?&//=]*)?)?(?:\s.*)?$");
 
             var errors = new Dictionary<string, string>();
 
@@ -111,8 +111,8 @@ namespace API.Controllers
             }
 
             // Validation
-            Regex validateTitle = new(@"^[a-zA-Z0-9]{1,30}$");
-            Regex validateText = new(@"(?:.*?\s)?(https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,10}(?:[-a-zA-Z0-9()@:%_+.~#?&//=]*)?)?(?:\s.*)?$");
+            Regex validateTitle = new(@"^[a-zA-Z0-9ÆØÅæøå\s]{1,30}$");
+            Regex validateText = new(@"(?:.*?\s)?(https?:\/\/(?:www\.)?[-a-zA-Z0-9ÆØÅæøå@:%._+~#=]{1,256}\.[a-zA-Z0-9ÆØÅæøå()]{1,10}(?:[-a-zA-Z0-9ÆØÅæøå()@:%_+.~#?&//=]*)?)?(?:\s.*)?$");
 
             var errors = new Dictionary<string, string>();
 
