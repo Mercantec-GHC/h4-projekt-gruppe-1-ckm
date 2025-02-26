@@ -53,15 +53,7 @@ class DashboardState extends State<Dashboard> {
                 qr["user_id"].toString() == userId) // Compare both as strings
             .map<int>((qr) => qr["qr_id"])
             .toList();
-
-        if (userQrIds.isEmpty) {
-          setState(() {
-            errorMessage = "No QR codes found for this user.";
-            userQrCodes = [];
-          });
-          return;
-        }
-
+            
         // Fetch full QR details from /api/QrCodes
         var allQrResponse = await http.get(
           Uri.parse('https://localhost:7173/api/QrCodes'),
@@ -102,19 +94,20 @@ class DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const Header(),
-      body: SafeArea(
-        child: Column(
-          children: [
-            if (errorMessage != null)
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  errorMessage!,
-                  style: const TextStyle(color: Colors.red, fontSize: 16),
-                  textAlign: TextAlign.center,
-                ),
+  return Scaffold(
+  appBar: const Header(),
+  body: SafeArea(
+    child: Column(
+      children: [
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 0.7,
               ),
             Padding(
               padding: const EdgeInsets.all(8.0),

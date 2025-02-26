@@ -175,6 +175,7 @@ class _ShowQrState extends State<ShowQr> {
               Container(
                 child: IconButton(
                   icon: const Icon(Icons.info_outline),
+                  iconSize: 40,
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -188,6 +189,7 @@ class _ShowQrState extends State<ShowQr> {
               Container(
                 child: IconButton(
                   icon: const Icon(Icons.delete),
+                  iconSize: 40,
                   onPressed: () {
                     _comfirmDelete();
                   },
@@ -197,6 +199,7 @@ class _ShowQrState extends State<ShowQr> {
               Container(
                 child: IconButton(
                   icon: const Icon(Icons.edit),
+                  iconSize: 40,
                   onPressed: () {
                     Navigator.push(
                       context,

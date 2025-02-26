@@ -58,30 +58,15 @@ class CreateQrState extends State<CreateQr> {
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final responseData = jsonDecode(response.body);
-
-        String? token = responseData['token'];
-
-        if (token != null) {
-          await _authService.saveToken(token); // Save token securely
-          setState(() {
-            result = 'Qr Code created successfully!';
-          });
-
-          // Redirect to Dashboard after successful login
+     if (response.statusCode == 200 || response.statusCode == 201) {
+        
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const Dashboard()),
           );
-        } else {
-          setState(() {
-            result = 'Qr Code creation failed: Token not received';
-          });
-        }
       } else {
         setState(() {
-          result = 'Qr Code creation failed: ${response.body}';
+          result = 'create Failed: ${response.body}';
         });
       }
     } catch (e) {

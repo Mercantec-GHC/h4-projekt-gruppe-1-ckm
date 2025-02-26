@@ -190,6 +190,7 @@ class _AccountState extends State<Account> {
                         },
                       ),
                     ),
+                      onChanged: (_) => setState(() => isChanged = true),
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(

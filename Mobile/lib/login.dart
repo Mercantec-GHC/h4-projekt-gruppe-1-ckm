@@ -50,7 +50,6 @@ class _LoginState extends State<Login> {
             result = 'Login Successful!';
           });
 
-          // 🚀 Redirect to Dashboard after successful login
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const Dashboard()),
@@ -74,9 +73,7 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
+    return Scaffold(
         body: SingleChildScrollView(
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -208,7 +205,6 @@ class _LoginState extends State<Login> {
           ),
         ),
         bottomNavigationBar: const FooterOnlyHome(),
-      ),
-    );
+      );
   }
 }

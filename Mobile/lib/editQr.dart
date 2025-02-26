@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:Mobile/dashboard.dart';
 import 'package:Mobile/templates/footer.dart';
 import 'package:Mobile/templates/header.dart';
 import 'package:flutter/material.dart';
@@ -26,41 +27,12 @@ class _EditQrState extends State<EditQr> {
   String result = '';
   String titleHint = "Fetching title...";
   String linkHint = "Fetching link/text...";
+
   @override
   void dispose() {
     titleController.dispose();
     linkController.dispose();
     super.dispose();
-  }
-
-  Future<void> _putQr() async {
-    String? token = await AuthService().getToken();
-    if (token == null) return;
-    try {
-      Map<String, dynamic> updatedQr = {
-        'title': titleController.text.trim(),
-        'text': linkController.text.trim(),
-      };
-      var response = await http.put(
-          Uri.parse('https://localhost:7173/api/QrCodes/${widget.qrCodeId}'),
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": 'Bearer $token'
-          },
-          body: jsonEncode(updatedQr));
-      if (response.statusCode == 200 || response.statusCode == 204) {
-        setState(() {
-          successMessage = "Updated successfully";
-        });
-      } else {
-        errorMessage =
-            "Update failed: ${response.body}: ${response.statusCode}";
-      }
-    } catch (e) {
-      setState(() {
-        result = 'Error: $e';
-      });
-    }
   }
 
   @override
@@ -81,7 +53,7 @@ class _EditQrState extends State<EditQr> {
         });
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
-
+      
       setState(() {
         titleHint = data['title'] ?? 'Enter Title';
         linkHint = data['text'] ?? 'Enter Link/Text';
@@ -89,6 +61,37 @@ class _EditQrState extends State<EditQr> {
     } else {
       setState(() {
         errorMessage = "Get failed: ${response.body}: ${response.statusCode}";
+      });
+    }
+  }
+
+  Future<void> _putQr() async {
+    String? token = await AuthService().getToken();
+    if (token == null) return;
+    try {
+      Map<String, dynamic> updatedQr = {
+        'title': titleController.text.trim().isNotEmpty ? titleController.text.trim() : titleHint,
+        'text': linkController.text.trim().isNotEmpty ? linkController.text.trim() : linkHint,
+      };
+      var response = await http.put(
+          Uri.parse('https://localhost:7173/api/QrCodes/${widget.qrCodeId}'),
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": 'Bearer $token'
+          },
+          body: jsonEncode(updatedQr));
+      if (response.statusCode == 200 || response.statusCode == 204) {
+         Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const Dashboard()),
+          );
+      } else {
+        errorMessage =
+            "Update failed: ${response.body}: ${response.statusCode}";
+      }
+    } catch (e) {
+      setState(() {
+        result = 'Error: $e';
       });
     }
   }
