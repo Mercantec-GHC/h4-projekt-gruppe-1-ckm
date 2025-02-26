@@ -73,9 +73,7 @@ class _SignupState extends State<Signup> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
+    return Scaffold(
         body: SingleChildScrollView(
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -221,7 +219,7 @@ class _SignupState extends State<Signup> {
           ),
         ),
         bottomNavigationBar: const FooterOnlyHome(),
-      ),
-    );
+      );
+
   }
 }
