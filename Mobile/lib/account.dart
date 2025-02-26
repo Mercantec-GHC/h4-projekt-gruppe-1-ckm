@@ -126,6 +126,7 @@ class _AccountState extends State<Account> {
       appBar: const Header(),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
+        
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -204,6 +205,7 @@ class _AccountState extends State<Account> {
               ),
             ),
             const SizedBox(height: 10),
+            
             if (successMessage != null)
               Text(successMessage!,
                   style: const TextStyle(

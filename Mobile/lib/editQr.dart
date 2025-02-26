@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'auth_service.dart';
 
+// ignore: must_be_immutable
 class EditQr extends StatefulWidget {
   String qrCodeId;
 
