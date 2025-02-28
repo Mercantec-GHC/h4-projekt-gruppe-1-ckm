@@ -94,11 +94,11 @@ class DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const Header(),
-      body: SafeArea(
-        child: Column(
-          children: [
+  return Scaffold(
+  appBar: const Header(),
+  body: SafeArea(
+    child: Column(
+      children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: SearchAnchor(
@@ -140,7 +140,7 @@ class DashboardState extends State<Dashboard> {
                           MaterialPageRoute(
                             builder: (context) => ShowQr(
                               qrCodeId: suggestions[index]["qr_id"]!,
-                            ),
+                               ),
                           ),
                         );
                       },
@@ -149,6 +149,7 @@ class DashboardState extends State<Dashboard> {
                 },
               ),
             ),
+            
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -243,10 +244,11 @@ class DashboardState extends State<Dashboard> {
                 ),
               ),
             ),
-          ],
-        ),
+    ],
+          ),
       ),
       bottomNavigationBar: const Footer(),
     );
   }
 }
+

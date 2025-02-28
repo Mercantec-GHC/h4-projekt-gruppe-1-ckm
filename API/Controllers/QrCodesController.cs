@@ -94,7 +94,8 @@ namespace API.Controllers
         }
 
         // PUT: used to increment the scan count of a QR code
-        [HttpPut]
+        [Authorize]
+        [HttpPut("Scanning/{id}")]
         public async Task<IActionResult> IncrementQrCode(int id)
         {
             var qrCode = await _context.QrCodes.FindAsync(id);
