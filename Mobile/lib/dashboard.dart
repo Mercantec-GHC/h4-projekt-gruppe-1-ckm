@@ -68,10 +68,10 @@ class DashboardState extends State<Dashboard> {
             userQrCodes = allQrData
                 .where((qr) => userQrIds.contains(qr["id"]))
                 .map((qr) => {
-                      "qr_id": qr["id"].toString(), // Add qr_id here
+                      "qr_id": qr["id"].toString(), 
                       "text": qr["text"].toString(),
                       "title": qr["title"]?.toString() ??
-                          "Untitled QR" // Ensure title is a string
+                          "Untitled QR"
                     })
                 .toList();
           });
