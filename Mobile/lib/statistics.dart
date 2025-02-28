@@ -3,7 +3,8 @@ import 'package:Mobile/templates/header.dart';
 import 'package:flutter/material.dart';
 
 class Statistics extends StatefulWidget {
-  const Statistics({super.key});
+  final String qrCodeId;
+  const Statistics({super.key, required this.qrCodeId});
 
   @override
   _ShowQrState createState() => _ShowQrState();

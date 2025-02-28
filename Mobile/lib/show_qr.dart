@@ -29,6 +29,7 @@ class _ShowQrState extends State<ShowQr> {
   void initState() {
     super.initState();
     _getQr();
+    _incrementScanning();
   }
 
   Future<void> _getQr() async {
@@ -50,6 +51,29 @@ class _ShowQrState extends State<ShowQr> {
     } else {
       setState(() {
         errorMessage = "Get failed: ${response.body}: ${response.statusCode}";
+      });
+    }
+  }
+
+  Future<void> _incrementScanning() async {
+    String? token = await AuthService().getToken();
+    if (token == null) return;
+
+    var response = await http.put(
+        Uri.parse(
+            'https://localhost:7173/api/QrCodes/Scanning/${widget.qrCodeId}'),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": 'Bearer $token'
+        });
+    if (response.statusCode == 200) {
+      setState(() {
+        print('Ok');
+      });
+    } else {
+      setState(() {
+        errorMessage = "Get failed: ${response.body}: ${response.statusCode}";
+        print(errorMessage);
       });
     }
   }
@@ -180,7 +204,10 @@ class _ShowQrState extends State<ShowQr> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const Statistics()),
+                        builder: (context) => Statistics(
+                          qrCodeId: widget.qrCodeId,
+                        ),
+                      ),
                     );
                   },
                 ),
