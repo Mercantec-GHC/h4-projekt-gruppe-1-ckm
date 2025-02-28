@@ -53,7 +53,7 @@ class DashboardState extends State<Dashboard> {
                 qr["user_id"].toString() == userId) // Compare both as strings
             .map<int>((qr) => qr["qr_id"])
             .toList();
-            
+
         // Fetch full QR details from /api/QrCodes
         var allQrResponse = await http.get(
           Uri.parse('https://localhost:7173/api/QrCodes'),
@@ -94,6 +94,7 @@ class DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
+
   return Scaffold(
   appBar: const Header(),
   body: SafeArea(

@@ -6,6 +6,7 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:Mobile/auth_service.dart';
 import 'package:Mobile/login.dart';
 import 'package:http/http.dart' as http;
+import 'package:Mobile/brickBreaker.dart';
 
 class Account extends StatefulWidget {
   const Account({super.key});
@@ -126,7 +127,6 @@ class _AccountState extends State<Account> {
       appBar: const Header(),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -190,7 +190,7 @@ class _AccountState extends State<Account> {
                         },
                       ),
                     ),
-                      onChanged: (_) => setState(() => isChanged = true),
+                    onChanged: (_) => setState(() => isChanged = true),
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
@@ -206,7 +206,6 @@ class _AccountState extends State<Account> {
               ),
             ),
             const SizedBox(height: 10),
-            
             if (successMessage != null)
               Text(successMessage!,
                   style: const TextStyle(
@@ -215,12 +214,13 @@ class _AccountState extends State<Account> {
               Text(errorMessage!,
                   style: const TextStyle(
                       color: Colors.red, fontWeight: FontWeight.bold)),
-            
             const SizedBox(height: 20),
-            
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/brickBreaker');
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => BrickBreaker()),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.purple,
@@ -229,9 +229,7 @@ class _AccountState extends State<Account> {
               ),
               child: const Center(child: Text("Play")),
             ),
-            
             const SizedBox(height: 20),
-            
             ElevatedButton(
               onPressed: logout, // Call logout function
               style: ElevatedButton.styleFrom(
