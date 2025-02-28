@@ -54,20 +54,33 @@ class _LoginState extends State<Login> {
             context,
             MaterialPageRoute(builder: (context) => const Dashboard()),
           );
-        } else {
+        } 
+      } else {
+      try {
+        final Map<String, dynamic> errorData = jsonDecode(response.body);
+
+        if (errorData.containsKey('message')) {
+          // Handle login errors (format: { "message": "Invalid username or password" })
           setState(() {
-            result = 'Login Failed: Token not received';
+            result = 'Login Failed: ${errorData['message']}';
+          });
+        } else {
+          // Handle unexpected error format
+          setState(() {
+            result = 'Login Failed: ${response.body}';
           });
         }
-      } else {
+      } catch (e) {
+        // Handle JSON parsing errors
         setState(() {
           result = 'Login Failed: ${response.body}';
         });
       }
-    } catch (e) {
-      setState(() {
-        result = 'Error: $e';
-      });
+    }
+  } catch (e) {
+    setState(() {
+      result = 'Error: $e';
+    });
     }
   }
 
