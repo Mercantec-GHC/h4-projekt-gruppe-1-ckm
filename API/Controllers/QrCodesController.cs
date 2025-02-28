@@ -20,6 +20,30 @@ namespace API.Controllers
             return await _context.QrCodes.ToListAsync();
         }
 
+        // Get scannings
+        // [Authorize]
+        [HttpGet("scan/{id}")]
+        public async Task<ActionResult<IncrementQrCodeScan>> GetScan(int id)
+        {
+            // Find the QR code matching the given ID
+            var qrCode = await _context.QrCodes
+                .Where(q => q.Id == id)
+                .Select(q => new IncrementQrCodeScan
+                {
+                    Scannings = q.Scannings,
+                })
+                .FirstOrDefaultAsync();
+
+            // If we didn't find a matching QR code, return 404 NotFound
+            if (qrCode == null)
+            {
+                return NotFound();
+            }
+
+            // Return the single QR code's scan info
+            return Ok(qrCode);
+        }
+
         // GET: api/QrCodes/5
         [HttpGet("{id}")]
         public async Task<ActionResult<QrCode>> GetQrCode(int id)
