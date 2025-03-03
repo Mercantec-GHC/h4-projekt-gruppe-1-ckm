@@ -50,7 +50,7 @@ class _ShowQrState extends State<ShowQr> {
       });
     } else {
       setState(() {
-        errorMessage = "Get failed: ${response.body}: ${response.statusCode}";
+        errorMessage = "QR failed to load.";
       });
     }
   }
@@ -72,7 +72,7 @@ class _ShowQrState extends State<ShowQr> {
       });
     } else {
       setState(() {
-        errorMessage = "Get failed: ${response.body}: ${response.statusCode}";
+        errorMessage = "Imcrement failed.";
         print(errorMessage);
       });
     }
@@ -142,8 +142,7 @@ class _ShowQrState extends State<ShowQr> {
           );
         });
       } else {
-        errorMessage =
-            "Delete failed: ${response.body}: ${response.statusCode}";
+        errorMessage = "Delete failed";
       }
     } catch (e) {
       setState(() {
