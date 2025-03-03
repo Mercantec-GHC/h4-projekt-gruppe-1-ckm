@@ -68,12 +68,17 @@ class DashboardState extends State<Dashboard> {
             userQrCodes = allQrData
                 .where((qr) => userQrIds.contains(qr["id"]))
                 .map((qr) => {
-                      "qr_id": qr["id"].toString(), 
+                      "qr_id": qr["id"].toString(),
                       "text": qr["text"].toString(),
-                      "title": qr["title"]?.toString() ??
-                          "Untitled QR"
+                      "title": qr["title"]?.toString() ?? "Untitled QR",
+                      "updatedAt": qr["updatedAt"].toString() ??
+                          "1970-01-01T00:00:00Z" // Default to a very old date if null
                     })
                 .toList();
+
+            // Sort by updated_at in descending order (newest updates first)
+            userQrCodes.sort((a, b) => DateTime.parse(b["updated_at"]!)
+                .compareTo(DateTime.parse(a["updated_at"]!)));
           });
         } else {
           setState(() {
@@ -94,12 +99,11 @@ class DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-
-  return Scaffold(
-  appBar: const Header(),
-  body: SafeArea(
-    child: Column(
-      children: [    
+    return Scaffold(
+      appBar: const Header(),
+      body: SafeArea(
+        child: Column(
+          children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: SearchAnchor(
@@ -128,7 +132,6 @@ class DashboardState extends State<Dashboard> {
                       .where((qr) =>
                           qr["title"]?.toLowerCase().contains(query) ?? false)
                       .toList();
-
                   return List<Widget>.generate(suggestions.length, (int index) {
                     final String item =
                         suggestions[index]["title"] ?? "Untitled QR";
@@ -141,7 +144,7 @@ class DashboardState extends State<Dashboard> {
                           MaterialPageRoute(
                             builder: (context) => ShowQr(
                               qrCodeId: suggestions[index]["qr_id"]!,
-                               ),
+                            ),
                           ),
                         );
                       },
@@ -150,7 +153,6 @@ class DashboardState extends State<Dashboard> {
                 },
               ),
             ),
-            
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -245,11 +247,10 @@ class DashboardState extends State<Dashboard> {
                 ),
               ),
             ),
-    ],
-          ),
+          ],
+        ),
       ),
       bottomNavigationBar: const Footer(),
     );
   }
 }
-
