@@ -105,11 +105,6 @@ class DashboardState extends State<Dashboard> {
       body: SafeArea(
         child: Column(
           children: [
-    return Scaffold(
-      appBar: const Header(),
-      body: SafeArea(
-        child: Column(
-          children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
 
@@ -144,8 +139,7 @@ class DashboardState extends State<Dashboard> {
                           qr["title"]?.toLowerCase().contains(query) ?? false)
                       .toList();
                   return List<Widget>.generate(suggestions.length, (int index) {
-                    final String item =
-                        suggestions[index]["title"] ?? "Untitled QR";
+                    final String item = suggestions[index]["title"] ?? "Untitled QR";
                     return ListTile(
                       title: Text(item),
                       onTap: () {
