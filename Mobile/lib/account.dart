@@ -130,7 +130,7 @@ class _AccountState extends State<Account> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text("Account",
+            const Text("Profile",
                 style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
