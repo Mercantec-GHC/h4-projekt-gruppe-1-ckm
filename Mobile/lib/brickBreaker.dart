@@ -24,24 +24,26 @@ class BrickBreakerGame extends StatefulWidget {
 class _BrickBreakerGameState extends State<BrickBreakerGame> {
   int _score = 0;
 
-  Timer? _timer;
-  Timer? _movementTimer;
+  Timer? _timer; // Timer for the game loop
+  Timer? _movementTimer; // Timer for paddle movement
   Timer? _brickMovementTimer; // Timer for moving bricks down
 
-  bool _isMovingLeft = false;
-  bool _isMovingRight = false;
+  bool _isMovingLeft = false; // Flag to check if paddle is moving left
+  bool _isMovingRight = false; // Flag to check if paddle is moving right
+  bool _isGameStarted = false; // Flag to check if the game has started
 
-  List<Offset> _brickPositions = [];
+  List<Offset> _brickPositions = []; // List to store brick positions
 
-  double _paddlePosition = 0.0;
-  Offset _ballPosition = Offset(0, 0);
-  Offset _ballVelocity = Offset(2, 2); // Ball moves down initially
+  double _paddlePosition = 0.0; // Position of the paddle
+  Offset _ballPosition = Offset(0, 0); // Position of the ball
+  Offset _ballVelocity = Offset(2, 2); // Velocity of the ball
 
-  FocusNode _focusNode = FocusNode();
+  FocusNode _focusNode = FocusNode(); // Focus node for keyboard input
 
   @override
   void initState() {
     super.initState();
+    
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeBricks();
       setState(() {
@@ -52,6 +54,7 @@ class _BrickBreakerGameState extends State<BrickBreakerGame> {
                 300); // Ball spawns above the paddle
       });
     });
+    
     gyroscopeEventStream().listen((GyroscopeEvent event) {
       setState(() {
         _paddlePosition += event.x * 2; // Adjust sensitivity as needed
@@ -62,9 +65,6 @@ class _BrickBreakerGameState extends State<BrickBreakerGame> {
         }
       });
     });
-
-    _startGameLoop();
-    _startBrickMovement(); // Start moving bricks down
   }
 
   void _initializeBricks() {
@@ -85,6 +85,7 @@ class _BrickBreakerGameState extends State<BrickBreakerGame> {
 
   void _startGameLoop() {
     _timer = Timer.periodic(Duration(milliseconds: 16), (timer) {
+      if (!_isGameStarted) return;
       setState(() {
         _ballPosition += _ballVelocity;
 
@@ -104,22 +105,7 @@ class _BrickBreakerGameState extends State<BrickBreakerGame> {
           // Bottom wall collision (game over)
           _timer?.cancel();
           _brickMovementTimer?.cancel(); // Stop brick movement
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text('Game Over'),
-              content: Text('You lost! Your score: $_score'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('OK'),
-                ),
-              ],
-            ),
-          );
+          _showGameOverDialog();
         }
 
         // Check for collision with paddle
@@ -148,43 +134,13 @@ class _BrickBreakerGameState extends State<BrickBreakerGame> {
             (brick) => brick.dy >= MediaQuery.of(context).size.height - 100)) {
           _timer?.cancel();
           _brickMovementTimer?.cancel(); // Stop brick movement
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text('Game Over'),
-              content: Text('Your score: $_score'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('OK'),
-                ),
-              ],
-            ),
-          );
+          _showGameOverDialog();
+        }
 
-          if (_brickPositions.isEmpty) {
-            _timer?.cancel();
-            _brickMovementTimer?.cancel(); // Stop brick movement
-            showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: Text('Victory'),
-                content: Text('Your score: $_score'),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('OK'),
-                  ),
-                ],
-              ),
-            );
-          }
+        if (_brickPositions.isEmpty) {
+          _timer?.cancel();
+          _brickMovementTimer?.cancel(); // Stop brick movement
+          _showVictoryDialog();
         }
       });
     });
@@ -192,6 +148,7 @@ class _BrickBreakerGameState extends State<BrickBreakerGame> {
 
   void _startBrickMovement() {
     _brickMovementTimer = Timer.periodic(Duration(seconds: 2), (timer) {
+      if (!_isGameStarted) return;
       setState(() {
         for (int i = 0; i < _brickPositions.length; i++) {
           _brickPositions[i] =
@@ -222,6 +179,75 @@ class _BrickBreakerGameState extends State<BrickBreakerGame> {
 
   void _stopMovementTimer() {
     _movementTimer?.cancel();
+  }
+
+  void _showGameOverDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Game Over'),
+        content: Text('You lost! Your score: $_score'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _resetGame();
+            },
+            child: Text('Play Again'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.of(context).pushReplacementNamed('/profile');
+            },
+            child: Text('Exit Game'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showVictoryDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Victory'),
+        content: Text('Your score: $_score'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _resetGame();
+            },
+            child: Text('Play Again'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.of(context).pushReplacementNamed('/profile');
+            },
+            child: Text('Exit Game'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _resetGame() {
+    setState(() {
+      _score = 0;
+      _isGameStarted = false;
+      _brickPositions.clear();
+      _initializeBricks();
+      _paddlePosition = (MediaQuery.of(context).size.width - 100) / 2;
+      _ballPosition = Offset(
+          MediaQuery.of(context).size.width / 2,
+          MediaQuery.of(context).size.height -
+              300); // Ball spawns above the paddle
+      _ballVelocity = Offset(2, 2); // Reset ball velocity
+    });
+    _startGameLoop();
+    _startBrickMovement();
   }
 
   @override
@@ -309,6 +335,19 @@ class _BrickBreakerGameState extends State<BrickBreakerGame> {
                 ),
               ),
             ),
+            if (!_isGameStarted)
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _isGameStarted = true;
+                    });
+                    _startGameLoop();
+                    _startBrickMovement();
+                  },
+                  child: Text('Start Game'),
+                ),
+              ),
           ],
         ),
       ),

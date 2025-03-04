@@ -27,6 +27,7 @@ class DashboardState extends State<Dashboard> {
     _fetchUserQrCodes();
   }
 
+  // This function fetches the user's QR codes from the API
   Future<void> _fetchUserQrCodes() async {
     String? token = await AuthService().getToken();
     if (token == null) return;
@@ -94,13 +95,15 @@ class DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-  return Scaffold(
-  appBar: const Header(),
-  body: SafeArea(
-    child: Column(
-      children: [
+    return Scaffold(
+      appBar: const Header(),
+      body: SafeArea(
+        child: Column(
+          children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
+
+              // This is the search bar widget that allows users to search for QR codes
               child: SearchAnchor(
                 builder: (BuildContext context, SearchController controller) {
                   return SearchBar(
@@ -117,12 +120,15 @@ class DashboardState extends State<Dashboard> {
                     leading: const Icon(Icons.search),
                   );
                 },
+                // This is the search suggestion builder that displays the search results
                 suggestionsBuilder:
                     (BuildContext context, SearchController controller) {
                   final query = controller.text.toLowerCase();
+                  // This insures that the search results are empty if search bar is empty
                   if (query.isEmpty) {
                     return [];
                   }
+                  // This filters the userQrCodes list for QR codes that contain the searched letters/words in the search bar
                   final suggestions = userQrCodes
                       .where((qr) =>
                           qr["title"]?.toLowerCase().contains(query) ?? false)
@@ -140,7 +146,7 @@ class DashboardState extends State<Dashboard> {
                           MaterialPageRoute(
                             builder: (context) => ShowQr(
                               qrCodeId: suggestions[index]["qr_id"]!,
-                               ),
+                            ),
                           ),
                         );
                       },
@@ -149,7 +155,8 @@ class DashboardState extends State<Dashboard> {
                 },
               ),
             ),
-            
+
+            // This is the QR code grid that displays the user's QR codes
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -164,8 +171,8 @@ class DashboardState extends State<Dashboard> {
                   itemBuilder: (context, index) {
                     if (index < userQrCodes.length) {
                       return GestureDetector(
+                        // Navigate to ShowQr screen with the QR ID
                         onTap: () {
-                          // Navigate to ShowQr screen with the QR ID
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -205,12 +212,10 @@ class DashboardState extends State<Dashboard> {
                     } else {
                       return GestureDetector(
                         onTap: () {
-                          // Navigate to the CreateQrPage when "Add QR-code" is tapped
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  CreateQr(), // Navigate to CreateQrPage
+                              builder: (context) => CreateQr(),
                             ),
                           );
                         },
@@ -244,11 +249,10 @@ class DashboardState extends State<Dashboard> {
                 ),
               ),
             ),
-    ],
-          ),
+          ],
+        ),
       ),
       bottomNavigationBar: const Footer(),
     );
   }
 }
-
