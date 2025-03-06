@@ -104,8 +104,9 @@ class _ShowQrState extends State<ShowQr> {
     );
   }
 
-  Future<void> incrementScanCount(int qrCodeId) async {
-    final url = Uri.parse('https://localhost:7173/api/QrCode/$qrCodeId');
+  Future<void> incrementScanCount() async {
+    final url =
+        Uri.parse('https://localhost:7173/api/QrCode/${widget.qrCodeId}');
 
     final response = await http.put(
       url,
@@ -152,7 +153,7 @@ class _ShowQrState extends State<ShowQr> {
   }
 
   // Confirm deletion via dialog
-  Future<void> _comfirmDelete() async {
+  Future<void> _comfirmDelete() {
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -251,9 +252,19 @@ class _ShowQrState extends State<ShowQr> {
                       size: 300.0,
                     )
                   : const Center(
-                      child:
-                          // Use Center widget for CircularProgressIndicator
-                          CircularProgressIndicator()),
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          "Error: QR Code data is empty.",
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
               SizedBox(height: 20),
               Text(
                 titleHint,
@@ -264,7 +275,7 @@ class _ShowQrState extends State<ShowQr> {
                 width: 180,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xff6F58C9),
+                    backgroundColor: const Color.fromARGB(255, 28, 28, 31),
                     foregroundColor: Colors.white,
                   ),
                   child: const Text(
