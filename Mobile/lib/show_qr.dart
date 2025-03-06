@@ -205,6 +205,7 @@ class _ShowQrState extends State<ShowQr> {
                       MaterialPageRoute(
                         builder: (context) => Statistics(
                           qrCodeId: widget.qrCodeId,
+                          qrCodeTitle: titleHint,
                         ),
                       ),
                     );

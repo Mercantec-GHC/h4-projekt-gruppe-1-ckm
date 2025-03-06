@@ -20,6 +20,7 @@ class _EditQrState extends State<EditQr> {
   // Controllers for the text fields
   final TextEditingController titleController = TextEditingController();
   final TextEditingController linkController = TextEditingController();
+  String apiUrl = 'https://localhost:7173/api/';
 
   // Error message to display in case of an error
   String? errorMessage;
@@ -46,7 +47,7 @@ class _EditQrState extends State<EditQr> {
     if (token == null) return;
 
     var response = await http.get(
-        Uri.parse('https://localhost:7173/api/QrCodes/${widget.qrCodeId}'),
+        Uri.parse('${apiUrl}QrCodes/${widget.qrCodeId}'),
         headers: {
           "Content-Type": "application/json",
           "Authorization": 'Bearer $token'
@@ -81,7 +82,7 @@ class _EditQrState extends State<EditQr> {
             : linkHint,
       };
       var response = await http.put(
-          Uri.parse('https://localhost:7173/api/QrCodes/${widget.qrCodeId}'),
+          Uri.parse('${apiUrl}QrCodes/${widget.qrCodeId}'),
           headers: {
             "Content-Type": "application/json",
             "Authorization": 'Bearer $token'
