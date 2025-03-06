@@ -14,26 +14,6 @@ class Footer extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          // Profile
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Account()),
-                ),
-                icon: const Icon(Icons.person_2_rounded),
-              ),
-              const SizedBox(height: 2),
-              const Text(
-                'Profile',
-                style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
           // Home
           Column(
             mainAxisSize: MainAxisSize.min,
@@ -70,6 +50,26 @@ class Footer extends StatelessWidget {
               const SizedBox(height: 2),
               const Text(
                 'Camera',
+                style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          // Profile
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Account()),
+                ),
+                icon: const Icon(Icons.person_2_rounded),
+              ),
+              const SizedBox(height: 2),
+              const Text(
+                'Profile',
                 style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
               ),
             ],

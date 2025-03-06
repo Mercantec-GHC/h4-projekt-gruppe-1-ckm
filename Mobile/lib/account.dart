@@ -6,6 +6,7 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:Mobile/auth_service.dart';
 import 'package:Mobile/login.dart';
 import 'package:http/http.dart' as http;
+import 'package:Mobile/brickBreaker.dart';
 
 class Account extends StatefulWidget {
   const Account({super.key});
@@ -22,6 +23,7 @@ class _AccountState extends State<Account> {
   bool isChanged = false;
   String? successMessage;
   String? errorMessage;
+  String apiUrl = 'https://localhost:7173/api/';
 
   @override
   void initState() {
@@ -114,6 +116,10 @@ class _AccountState extends State<Account> {
 
       if (response.statusCode == 200 || response.statusCode == 204) {
         logout();
+      } else {
+        setState(() {
+          errorMessage = response.body;
+        });
       }
     } catch (e) {
       print("ERROR: Exception occurred: $e");
@@ -126,11 +132,10 @@ class _AccountState extends State<Account> {
       appBar: const Header(),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text("Account",
+            const Text("Profile",
                 style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -168,11 +173,6 @@ class _AccountState extends State<Account> {
                   const Text("Password",
                       style: TextStyle(
                           fontWeight: FontWeight.bold, color: Colors.purple)),
-                  const Text(
-                    "Enter your current password or a new one.",
-                    style: TextStyle(
-                        fontSize: 12, color: Color.fromARGB(255, 255, 0, 0)),
-                  ),
                   TextField(
                     controller: passwordController,
                     obscureText: !isPasswordVisible, // Hide or show password
@@ -190,7 +190,7 @@ class _AccountState extends State<Account> {
                         },
                       ),
                     ),
-                      onChanged: (_) => setState(() => isChanged = true),
+                    onChanged: (_) => setState(() => isChanged = true),
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
@@ -202,11 +202,20 @@ class _AccountState extends State<Account> {
                     ),
                     child: const Center(child: Text("Save Changes")),
                   ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: logout, // Call logout function
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    child: const Center(child: Text("Logout")),
+                  ),
                 ],
               ),
             ),
             const SizedBox(height: 10),
-            
             if (successMessage != null)
               Text(successMessage!,
                   style: const TextStyle(
@@ -215,12 +224,18 @@ class _AccountState extends State<Account> {
               Text(errorMessage!,
                   style: const TextStyle(
                       color: Colors.red, fontWeight: FontWeight.bold)),
-            
             const SizedBox(height: 20),
-            
+            const Text(
+              "play a waiting game",
+              style:
+                  TextStyle(fontSize: 12, color: Color.fromARGB(255, 0, 0, 0)),
+            ),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/brickBreaker');
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => BrickBreaker()),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.purple,
@@ -228,18 +243,6 @@ class _AccountState extends State<Account> {
                 padding: const EdgeInsets.symmetric(vertical: 12),
               ),
               child: const Center(child: Text("Play")),
-            ),
-            
-            const SizedBox(height: 20),
-            
-            ElevatedButton(
-              onPressed: logout, // Call logout function
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-              ),
-              child: const Center(child: Text("Logout")),
             ),
           ],
         ),
