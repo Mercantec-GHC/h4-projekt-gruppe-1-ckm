@@ -23,6 +23,7 @@ class _AccountState extends State<Account> {
   bool isChanged = false;
   String? successMessage;
   String? errorMessage;
+  String apiUrl = 'https://localhost:7173/api/';
 
   @override
   void initState() {
@@ -115,6 +116,10 @@ class _AccountState extends State<Account> {
 
       if (response.statusCode == 200 || response.statusCode == 204) {
         logout();
+      } else {
+        setState(() {
+          errorMessage = response.body;
+        });
       }
     } catch (e) {
       print("ERROR: Exception occurred: $e");
@@ -168,11 +173,6 @@ class _AccountState extends State<Account> {
                   const Text("Password",
                       style: TextStyle(
                           fontWeight: FontWeight.bold, color: Colors.purple)),
-                  const Text(
-                    "Enter your current password or a new one.",
-                    style: TextStyle(
-                        fontSize: 12, color: Color.fromARGB(255, 255, 0, 0)),
-                  ),
                   TextField(
                     controller: passwordController,
                     obscureText: !isPasswordVisible, // Hide or show password
@@ -202,6 +202,16 @@ class _AccountState extends State<Account> {
                     ),
                     child: const Center(child: Text("Save Changes")),
                   ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: logout, // Call logout function
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    child: const Center(child: Text("Logout")),
+                  ),
                 ],
               ),
             ),
@@ -215,6 +225,11 @@ class _AccountState extends State<Account> {
                   style: const TextStyle(
                       color: Colors.red, fontWeight: FontWeight.bold)),
             const SizedBox(height: 20),
+            const Text(
+              "play a waiting game",
+              style:
+                  TextStyle(fontSize: 12, color: Color.fromARGB(255, 0, 0, 0)),
+            ),
             ElevatedButton(
               onPressed: () {
                 Navigator.pushReplacement(
@@ -228,16 +243,6 @@ class _AccountState extends State<Account> {
                 padding: const EdgeInsets.symmetric(vertical: 12),
               ),
               child: const Center(child: Text("Play")),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: logout, // Call logout function
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-              ),
-              child: const Center(child: Text("Logout")),
             ),
           ],
         ),

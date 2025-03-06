@@ -18,6 +18,8 @@ class Dashboard extends StatefulWidget {
 
 class DashboardState extends State<Dashboard> {
   String? errorMessage;
+  String apiUrl = 'https://localhost:7173/api/';
+
   List<Map<String, String>> userQrCodes = [];
   List<Map<String, String>> searchResults = [];
 
@@ -37,7 +39,7 @@ class DashboardState extends State<Dashboard> {
 
     try {
       var userQrResponse = await http.get(
-        Uri.parse('https://localhost:7173/api/User_QrCode'),
+        Uri.parse('${apiUrl}User_QrCode'),
         headers: {
           "Content-Type": "application/json",
           "Authorization": 'Bearer $token'
@@ -56,7 +58,7 @@ class DashboardState extends State<Dashboard> {
 
         // Fetch full QR details from /api/QrCodes
         var allQrResponse = await http.get(
-          Uri.parse('https://localhost:7173/api/QrCodes'),
+          Uri.parse('${apiUrl}QrCodes'),
           headers: {"Content-Type": "application/json"},
         );
 
@@ -71,8 +73,7 @@ class DashboardState extends State<Dashboard> {
                       "qr_id": qr["id"].toString(),
                       "text": qr["text"].toString(),
                       "title": qr["title"]?.toString() ?? "Untitled QR",
-                      "updatedAt": qr["updatedAt"].toString() ??
-                          "1970-01-01T00:00:00Z" // Default to a very old date if null
+                      "updatedAt": qr["updatedAt"].toString()
                     })
                 .toList();
 

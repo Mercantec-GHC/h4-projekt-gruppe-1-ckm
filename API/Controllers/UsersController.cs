@@ -126,9 +126,6 @@ namespace API.Controllers
         [HttpPost("signUp")]
         public async Task<ActionResult<User>> Signup(SignupDTO userSignUp)
         {
-            // Hash the password
-            var HashedPassword = BCrypt.Net.BCrypt.HashPassword(userSignUp.Password);
- 
             // Regex patterns
             Regex validateUsername = new(@"^[a-zA-Z0-9]{5,15}$");  // Only letters and numbers (5-15 chars)
             Regex validateEmail = new(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");  // Standard email format
@@ -172,7 +169,10 @@ namespace API.Controllers
             {
                 return BadRequest(new { Errors = errors });
             }
- 
+
+            // Hash the password
+            var HashedPassword = BCrypt.Net.BCrypt.HashPassword(userSignUp.Password);
+
             // Create new user object
             User user = new()
             {
@@ -215,7 +215,6 @@ namespace API.Controllers
                 new Claim("name", user.Username),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             };
-
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"] ?? Environment.GetEnvironmentVariable("Key")));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
